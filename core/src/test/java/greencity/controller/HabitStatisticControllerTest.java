@@ -197,4 +197,15 @@ public class HabitStatisticControllerTest {
 
         verify(habitStatisticService).findAllStatsByHabitId(1L);
     }
+
+    @Test
+    void findAllStatsByHabitAssignId_NotFound() throws Exception {
+        when(habitStatisticService.findAllStatsByHabitAssignId(anyLong()))
+                .thenThrow(new NotFoundException("Habit assignment not found"));
+
+        mockMvc.perform(get(habitStatisticControllerLink + "/assign/{habitAssignId}", 1L))
+                .andExpect(status().isNotFound());
+
+        verify(habitStatisticService).findAllStatsByHabitAssignId(1L);
+    }
 }
