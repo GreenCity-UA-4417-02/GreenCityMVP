@@ -245,4 +245,23 @@ public class HabitStatisticControllerTest {
                         .content(content))
                 .andExpect(status().isNotFound());
     }
+
+    @Test
+    void findAmountOfAcquiredHabits_BadRequest() throws Exception {
+        mockMvc.perform(get(habitStatisticControllerLink + "/acquired/count")
+                        .param("userId", "abc"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void findAmountOfHabitsInProgress_BadRequest() throws Exception {
+        mockMvc.perform(get(habitStatisticControllerLink + "/in-progress/count"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void findAllByHabitId_InvalidFormat() throws Exception {
+        mockMvc.perform(get(habitStatisticControllerLink + "/not_a_number"))
+                .andExpect(status().isBadRequest());
+    }
 }
