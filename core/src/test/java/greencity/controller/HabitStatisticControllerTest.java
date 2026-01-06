@@ -67,4 +67,12 @@ public class HabitStatisticControllerTest {
 
         verify(habitStatisticService).findAllStatsByHabitId(1L);
     }
+
+    @Test
+    void findAllStatsByHabitAssignId() throws Exception {
+        mockMvc.perform(get(habitStatisticControllerLink + "/assign/{habitAssignId}", 1L))
+                .andExpect(status().isOk());
+
+        verify(habitStatisticService).findAllStatsByHabitAssignId(1L);
+    }
 }
