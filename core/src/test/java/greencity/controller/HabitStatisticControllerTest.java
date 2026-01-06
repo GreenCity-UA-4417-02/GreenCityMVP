@@ -7,6 +7,7 @@ import greencity.converters.UserArgumentResolver;
 import greencity.service.HabitStatisticService;
 import greencity.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -22,6 +23,9 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.security.Principal;
 
 import static greencity.ModelUtils.*;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -54,5 +58,13 @@ public class HabitStatisticControllerTest {
                         new UserArgumentResolver(userService, modelMapper))
                 .setMessageConverters(new MappingJackson2HttpMessageConverter(objectMapper))
                 .build();
+    }
+
+    @Test
+    void findAllByHabitId() throws Exception {
+        mockMvc.perform(get(habitStatisticControllerLink + "/{habitId}", 1L))
+                .andExpect(status().isOk());
+
+        verify(habitStatisticService).findAllStatsByHabitId(1L);
     }
 }
