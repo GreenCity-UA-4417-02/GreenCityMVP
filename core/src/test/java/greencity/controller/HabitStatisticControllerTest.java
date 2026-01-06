@@ -9,6 +9,7 @@ import greencity.dto.habitstatistic.HabitItemsAmountStatisticDto;
 import greencity.dto.habitstatistic.UpdateHabitStatisticDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.HabitRate;
+import greencity.exception.handler.CustomExceptionHandler;
 import greencity.service.HabitStatisticService;
 import greencity.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,16 +21,17 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.modelmapper.ModelMapper;
+import org.springframework.boot.web.error.ErrorAttributeOptions;
+import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.request.WebRequest;
 
 import java.security.Principal;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 import static greencity.ModelUtils.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -54,6 +56,9 @@ public class HabitStatisticControllerTest {
     @Mock
     private ModelMapper modelMapper;
 
+    @Mock
+    private ErrorAttributes errorAttributes;
+
     @InjectMocks
     private HabitStatisticController habitStatisticController;
 
@@ -65,10 +70,19 @@ public class HabitStatisticControllerTest {
 
     @BeforeEach
     void setup() {
+        when(errorAttributes.getErrorAttributes(any(WebRequest.class), any(ErrorAttributeOptions.class)))
+                .thenReturn(new HashMap<>(Map.of(
+                        "message", "error",
+                        "timestamp", "2026-01-06T20:00:00Z",
+                        "path", "/habit/statistic",
+                        "trace", "stacktrace"
+                )));
+
         this.mockMvc = MockMvcBuilders.standaloneSetup(habitStatisticController)
                 .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver(),
                         new UserArgumentResolver(userService, modelMapper))
                 .setMessageConverters(new MappingJackson2HttpMessageConverter(objectMapper))
+                .setControllerAdvice(new CustomExceptionHandler(errorAttributes, objectMapper))
                 .build();
     }
 
