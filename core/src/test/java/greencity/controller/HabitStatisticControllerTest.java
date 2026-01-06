@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import greencity.converters.UserArgumentResolver;
 import greencity.dto.habitstatistic.AddHabitStatisticDto;
+import greencity.dto.habitstatistic.HabitItemsAmountStatisticDto;
 import greencity.dto.habitstatistic.UpdateHabitStatisticDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.HabitRate;
@@ -26,6 +27,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.security.Principal;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
 
 import static greencity.ModelUtils.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -122,5 +126,19 @@ public class HabitStatisticControllerTest {
                 .andExpect(status().isOk());
 
         verify(habitStatisticService).update(1L, userVO.getId(), updateDto);
+    }
+
+    @Test
+    void getTodayStatisticsForAllHabitItems() throws Exception {
+        String language = "en";
+        List<HabitItemsAmountStatisticDto> dtoList = Collections.emptyList();
+
+        when(habitStatisticService.getTodayStatisticsForAllHabitItems(language)).thenReturn(dtoList);
+
+        mockMvc.perform(get(habitStatisticControllerLink + "/todayStatisticsForAllHabitItems")
+                        .locale(Locale.ENGLISH))
+                .andExpect(status().isOk());
+
+        verify(habitStatisticService).getTodayStatisticsForAllHabitItems(language);
     }
 }
