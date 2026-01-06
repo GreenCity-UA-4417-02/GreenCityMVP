@@ -5,7 +5,9 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import greencity.converters.UserArgumentResolver;
 import greencity.dto.habitstatistic.AddHabitStatisticDto;
+import greencity.dto.habitstatistic.UpdateHabitStatisticDto;
 import greencity.dto.user.UserVO;
+import greencity.enums.HabitRate;
 import greencity.service.HabitStatisticService;
 import greencity.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
@@ -97,5 +99,28 @@ public class HabitStatisticControllerTest {
                 .andExpect(status().isCreated());
 
         verify(userService).findByEmail("test@gmail.com");
+    }
+
+    @Test
+    void updateStatistic() throws Exception {
+        UserVO userVO = getUserVO();
+
+        UpdateHabitStatisticDto updateDto = UpdateHabitStatisticDto.builder()
+                .amountOfItems(10)
+                .habitRate(HabitRate.GOOD)
+                .build();
+
+        String content = objectMapper.writeValueAsString(updateDto);
+
+        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(modelMapper.map(userVO, UserVO.class)).thenReturn(userVO);
+
+        mockMvc.perform(put(habitStatisticControllerLink + "/{id}", 1L)
+                        .principal(principal)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(content))
+                .andExpect(status().isOk());
+
+        verify(habitStatisticService).update(1L, userVO.getId(), updateDto);
     }
 }
