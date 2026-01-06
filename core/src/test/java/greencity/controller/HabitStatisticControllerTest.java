@@ -224,4 +224,25 @@ public class HabitStatisticControllerTest {
                         .content("{}"))
                 .andExpect(status().isBadRequest());
     }
+
+    @Test
+    void updateStatistic_NotFound() throws Exception {
+        UserVO userVO = getUserVO();
+        UpdateHabitStatisticDto updateDto = UpdateHabitStatisticDto.builder()
+                .amountOfItems(10)
+                .habitRate(HabitRate.GOOD)
+                .build();
+        String content = objectMapper.writeValueAsString(updateDto);
+
+        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(modelMapper.map(userVO, UserVO.class)).thenReturn(userVO);
+        when(habitStatisticService.update(anyLong(), anyLong(), any(UpdateHabitStatisticDto.class)))
+                .thenThrow(new NotFoundException("Statistic not found"));
+
+        mockMvc.perform(put(habitStatisticControllerLink + "/{id}", 1L)
+                        .principal(principal)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(content))
+                .andExpect(status().isNotFound());
+    }
 }
