@@ -9,6 +9,7 @@ import greencity.dto.habitstatistic.HabitItemsAmountStatisticDto;
 import greencity.dto.habitstatistic.UpdateHabitStatisticDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.HabitRate;
+import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.handler.CustomExceptionHandler;
 import greencity.service.HabitStatisticService;
 import greencity.service.UserService;
@@ -183,5 +184,17 @@ public class HabitStatisticControllerTest {
                 .andExpect(content().string("5"));
 
         verify(habitStatisticService).getAmountOfHabitsInProgressByUserId(userId);
+    }
+
+
+    @Test
+    void findAllByHabitId_NotFound() throws Exception {
+        when(habitStatisticService.findAllStatsByHabitId(anyLong()))
+                .thenThrow(new NotFoundException("Habit not found"));
+
+        mockMvc.perform(get(habitStatisticControllerLink + "/{habitId}", 1L))
+                .andExpect(status().isNotFound());
+
+        verify(habitStatisticService).findAllStatsByHabitId(1L);
     }
 }
