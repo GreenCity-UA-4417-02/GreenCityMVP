@@ -208,4 +208,20 @@ public class HabitStatisticControllerTest {
 
         verify(habitStatisticService).findAllStatsByHabitAssignId(1L);
     }
+
+    @Test
+    void saveHabitStatistic_BadRequest() throws Exception {
+        mockMvc.perform(post(habitStatisticControllerLink + "/{habitId}", 1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{}"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void updateStatistic_BadRequest() throws Exception {
+        mockMvc.perform(put(habitStatisticControllerLink + "/{id}", 1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{}"))
+                .andExpect(status().isBadRequest());
+    }
 }
