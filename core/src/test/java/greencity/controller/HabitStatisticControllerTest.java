@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import greencity.converters.UserArgumentResolver;
+import greencity.dto.habitstatistic.AddHabitStatisticDto;
+import greencity.dto.user.UserVO;
 import greencity.service.HabitStatisticService;
 import greencity.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
+import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -23,7 +26,9 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.security.Principal;
 
 import static greencity.ModelUtils.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -74,5 +79,23 @@ public class HabitStatisticControllerTest {
                 .andExpect(status().isOk());
 
         verify(habitStatisticService).findAllStatsByHabitAssignId(1L);
+    }
+
+    @Test
+    void saveHabitStatistic() throws Exception {
+        UserVO userVO = getUserVO();
+        AddHabitStatisticDto addDto = addHabitStatisticDto();
+        String content = objectMapper.writeValueAsString(addDto);
+
+        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(modelMapper.map(userVO, UserVO.class)).thenReturn(userVO);
+
+        mockMvc.perform(post(habitStatisticControllerLink + "/{habitId}", 1L)
+                        .principal(principal)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(content))
+                .andExpect(status().isCreated());
+
+        verify(userService).findByEmail("test@gmail.com");
     }
 }
