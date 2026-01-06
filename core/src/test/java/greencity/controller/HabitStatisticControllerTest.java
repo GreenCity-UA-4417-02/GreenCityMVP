@@ -96,9 +96,37 @@ public class HabitStatisticControllerTest {
     }
 
     @Test
+    void findAllByHabitId_NotFound() throws Exception {
+        when(habitStatisticService.findAllStatsByHabitId(anyLong()))
+                .thenThrow(new NotFoundException("Habit not found"));
+
+        mockMvc.perform(get(habitStatisticControllerLink + "/{habitId}", 1L))
+                .andExpect(status().isNotFound());
+
+        verify(habitStatisticService).findAllStatsByHabitId(1L);
+    }
+
+    @Test
+    void findAllByHabitId_InvalidFormat() throws Exception {
+        mockMvc.perform(get(habitStatisticControllerLink + "/not_a_number"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     void findAllStatsByHabitAssignId() throws Exception {
         mockMvc.perform(get(habitStatisticControllerLink + "/assign/{habitAssignId}", 1L))
                 .andExpect(status().isOk());
+
+        verify(habitStatisticService).findAllStatsByHabitAssignId(1L);
+    }
+
+    @Test
+    void findAllStatsByHabitAssignId_NotFound() throws Exception {
+        when(habitStatisticService.findAllStatsByHabitAssignId(anyLong()))
+                .thenThrow(new NotFoundException("Habit assignment not found"));
+
+        mockMvc.perform(get(habitStatisticControllerLink + "/assign/{habitAssignId}", 1L))
+                .andExpect(status().isNotFound());
 
         verify(habitStatisticService).findAllStatsByHabitAssignId(1L);
     }
@@ -122,6 +150,14 @@ public class HabitStatisticControllerTest {
     }
 
     @Test
+    void saveHabitStatistic_BadRequest() throws Exception {
+        mockMvc.perform(post(habitStatisticControllerLink + "/{habitId}", 1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{}"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     void updateStatistic() throws Exception {
         UserVO userVO = getUserVO();
 
@@ -142,6 +178,35 @@ public class HabitStatisticControllerTest {
                 .andExpect(status().isOk());
 
         verify(habitStatisticService).update(1L, userVO.getId(), updateDto);
+    }
+
+    @Test
+    void updateStatistic_BadRequest() throws Exception {
+        mockMvc.perform(put(habitStatisticControllerLink + "/{id}", 1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{}"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void updateStatistic_NotFound() throws Exception {
+        UserVO userVO = getUserVO();
+        UpdateHabitStatisticDto updateDto = UpdateHabitStatisticDto.builder()
+                .amountOfItems(10)
+                .habitRate(HabitRate.GOOD)
+                .build();
+        String content = objectMapper.writeValueAsString(updateDto);
+
+        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(modelMapper.map(userVO, UserVO.class)).thenReturn(userVO);
+        when(habitStatisticService.update(anyLong(), anyLong(), any(UpdateHabitStatisticDto.class)))
+                .thenThrow(new NotFoundException("Statistic not found"));
+
+        mockMvc.perform(put(habitStatisticControllerLink + "/{id}", 1L)
+                        .principal(principal)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(content))
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -186,66 +251,6 @@ public class HabitStatisticControllerTest {
         verify(habitStatisticService).getAmountOfHabitsInProgressByUserId(userId);
     }
 
-
-    @Test
-    void findAllByHabitId_NotFound() throws Exception {
-        when(habitStatisticService.findAllStatsByHabitId(anyLong()))
-                .thenThrow(new NotFoundException("Habit not found"));
-
-        mockMvc.perform(get(habitStatisticControllerLink + "/{habitId}", 1L))
-                .andExpect(status().isNotFound());
-
-        verify(habitStatisticService).findAllStatsByHabitId(1L);
-    }
-
-    @Test
-    void findAllStatsByHabitAssignId_NotFound() throws Exception {
-        when(habitStatisticService.findAllStatsByHabitAssignId(anyLong()))
-                .thenThrow(new NotFoundException("Habit assignment not found"));
-
-        mockMvc.perform(get(habitStatisticControllerLink + "/assign/{habitAssignId}", 1L))
-                .andExpect(status().isNotFound());
-
-        verify(habitStatisticService).findAllStatsByHabitAssignId(1L);
-    }
-
-    @Test
-    void saveHabitStatistic_BadRequest() throws Exception {
-        mockMvc.perform(post(habitStatisticControllerLink + "/{habitId}", 1L)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{}"))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void updateStatistic_BadRequest() throws Exception {
-        mockMvc.perform(put(habitStatisticControllerLink + "/{id}", 1L)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{}"))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void updateStatistic_NotFound() throws Exception {
-        UserVO userVO = getUserVO();
-        UpdateHabitStatisticDto updateDto = UpdateHabitStatisticDto.builder()
-                .amountOfItems(10)
-                .habitRate(HabitRate.GOOD)
-                .build();
-        String content = objectMapper.writeValueAsString(updateDto);
-
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
-        when(modelMapper.map(userVO, UserVO.class)).thenReturn(userVO);
-        when(habitStatisticService.update(anyLong(), anyLong(), any(UpdateHabitStatisticDto.class)))
-                .thenThrow(new NotFoundException("Statistic not found"));
-
-        mockMvc.perform(put(habitStatisticControllerLink + "/{id}", 1L)
-                        .principal(principal)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(content))
-                .andExpect(status().isNotFound());
-    }
-
     @Test
     void findAmountOfAcquiredHabits_BadRequest() throws Exception {
         mockMvc.perform(get(habitStatisticControllerLink + "/acquired/count")
@@ -256,12 +261,6 @@ public class HabitStatisticControllerTest {
     @Test
     void findAmountOfHabitsInProgress_BadRequest() throws Exception {
         mockMvc.perform(get(habitStatisticControllerLink + "/in-progress/count"))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void findAllByHabitId_InvalidFormat() throws Exception {
-        mockMvc.perform(get(habitStatisticControllerLink + "/not_a_number"))
                 .andExpect(status().isBadRequest());
     }
 }
