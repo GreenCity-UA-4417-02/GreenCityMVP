@@ -36,6 +36,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
@@ -140,5 +141,33 @@ public class HabitStatisticControllerTest {
                 .andExpect(status().isOk());
 
         verify(habitStatisticService).getTodayStatisticsForAllHabitItems(language);
+    }
+
+    @Test
+    void findAmountOfAcquiredHabits() throws Exception {
+        Long userId = 1L;
+        when(habitStatisticService.getAmountOfAcquiredHabitsByUserId(userId)).thenReturn(10L);
+
+        mockMvc.perform(get(habitStatisticControllerLink + "/acquired/count")
+                        .param("userId", userId.toString())
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().string("10"));
+
+        verify(habitStatisticService).getAmountOfAcquiredHabitsByUserId(userId);
+    }
+
+    @Test
+    void findAmountOfHabitsInProgress() throws Exception {
+        Long userId = 1L;
+        when(habitStatisticService.getAmountOfHabitsInProgressByUserId(userId)).thenReturn(5L);
+
+        mockMvc.perform(get(habitStatisticControllerLink + "/in-progress/count")
+                        .param("userId", userId.toString())
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().string("5"));
+
+        verify(habitStatisticService).getAmountOfHabitsInProgressByUserId(userId);
     }
 }
