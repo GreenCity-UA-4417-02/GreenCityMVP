@@ -29,4 +29,14 @@ class ImageValidatorTest {
         boolean result = imageValidator.isValid(null, context);
         assertTrue(result);
     }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"image/jpeg", "image/png", "image/jpg"})
+    void isValid_ValidMimeTypes_ReturnsTrue(String mimeType) {
+        when(multipartFile.getContentType()).thenReturn(mimeType);
+
+        boolean result = imageValidator.isValid(multipartFile, context);
+
+        assertTrue(result);
+    }
 }
