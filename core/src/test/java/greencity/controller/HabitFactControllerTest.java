@@ -23,8 +23,7 @@ import org.springframework.validation.Validator;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
@@ -130,5 +129,15 @@ public class HabitFactControllerTest {
 
         verify(habitFactService).update(any(HabitFactUpdateDto.class), eq(1L));
         verify(modelMapper).map(habitFactVo, HabitFactPostDto.class);
+    }
+
+    @Test
+    void deleteHabitFact_shouldReturn200() throws Exception {
+
+        mockMvc.perform(
+                        delete(habitFactControllerLink + "/{id}", 1L))
+                .andExpect(status().isOk());
+
+        verify(habitFactService).delete(eq(1L));
     }
 }
