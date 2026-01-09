@@ -3,6 +3,7 @@ package greencity.controller;
 
 import greencity.dto.habitfact.HabitFactDtoResponse;
 import greencity.dto.habitfact.HabitFactPostDto;
+import greencity.dto.habitfact.HabitFactUpdateDto;
 import greencity.dto.habitfact.HabitFactVO;
 import greencity.service.HabitFactService;
 import org.junit.jupiter.api.Test;
@@ -16,7 +17,6 @@ import org.mockito.quality.Strictness;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.Validator;
@@ -24,6 +24,7 @@ import org.springframework.validation.Validator;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
@@ -42,21 +43,14 @@ public class HabitFactControllerTest {
     @Mock
     private ModelMapper modelMapper;
 
+    @Mock
+    private Validator mockValidator;
+
     @BeforeEach
     void setup() {
         mockMvc = MockMvcBuilders
                 .standaloneSetup(habitFactController)
-                .setValidator(new Validator() {
-                    @Override
-                    public boolean supports(Class<?> clazz) {
-                        return true;
-                    }
-
-                    @Override
-                    public void validate(Object target, org.springframework.validation.Errors errors) {
-
-                    }
-                })
+                .setValidator(mockValidator)
                 .setCustomArgumentResolvers(
                         new PageableHandlerMethodArgumentResolver()
                 )
@@ -98,5 +92,43 @@ public class HabitFactControllerTest {
 
         verify(habitFactService).save(any(HabitFactPostDto.class));
         verify(modelMapper).map(habitFactVo, HabitFactDtoResponse.class);
+    }
+
+    @Test
+    void updateHabitFact_shouldReturn200() throws Exception {
+        String content = """
+                {
+                    "translations": [
+                        {
+                        "factOfDayStatus": "POTENTIAL",
+                        "language": {
+                            "id": 1,
+                            "code": "en"
+                            },
+                        "content": "some content"
+                        }
+                    ],
+                    "habit": {
+                        "id": 1
+                    }
+                }
+                """;
+        HabitFactVO habitFactVo = new HabitFactVO();
+        HabitFactPostDto habitFactPostDto = new HabitFactPostDto();
+
+        when(habitFactService.update(any(HabitFactUpdateDto.class), eq(1L)))
+                .thenReturn(habitFactVo);
+
+        when(modelMapper.map(any(HabitFactVO.class), eq(HabitFactPostDto.class)))
+                .thenReturn(habitFactPostDto);
+        mockMvc.perform(
+                        put(habitFactControllerLink + "/{id}", 1L)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(content)
+                )
+                .andExpect(status().isOk());
+
+        verify(habitFactService).update(any(HabitFactUpdateDto.class), eq(1L));
+        verify(modelMapper).map(habitFactVo, HabitFactPostDto.class);
     }
 }
