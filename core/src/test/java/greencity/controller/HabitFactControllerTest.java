@@ -5,6 +5,7 @@ import greencity.dto.habitfact.HabitFactDtoResponse;
 import greencity.dto.habitfact.HabitFactPostDto;
 import greencity.dto.habitfact.HabitFactUpdateDto;
 import greencity.dto.habitfact.HabitFactVO;
+import greencity.dto.language.LanguageTranslationDTO;
 import greencity.service.HabitFactService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
@@ -54,6 +55,20 @@ public class HabitFactControllerTest {
                         new PageableHandlerMethodArgumentResolver()
                 )
                 .build();
+    }
+
+    @Test
+    void getHabitFactOfTheDay_shouldReturn200() throws Exception {
+        LanguageTranslationDTO languageTranslationDTO = new LanguageTranslationDTO();
+
+        when(habitFactService.getHabitFactOfTheDay(anyLong()))
+                .thenReturn(languageTranslationDTO);
+
+        mockMvc.perform(
+                get(habitFactControllerLink + "/dayFact/{languageId}", 1L)
+        ).andExpect(status().isOk());
+
+        verify(habitFactService).getHabitFactOfTheDay(eq(1L));
     }
 
     @Test
