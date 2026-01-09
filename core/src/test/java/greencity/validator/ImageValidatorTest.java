@@ -11,6 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.multipart.MultipartFile;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -38,5 +39,15 @@ class ImageValidatorTest {
         boolean result = imageValidator.isValid(multipartFile, context);
 
         assertTrue(result);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"image/gif", "application/pdf", "text/plain", "video/mp4"})
+    void isValid_InvalidMimeTypes_ReturnsFalse(String mimeType) {
+        when(multipartFile.getContentType()).thenReturn(mimeType);
+
+        boolean result = imageValidator.isValid(multipartFile, context);
+
+        assertFalse(result);
     }
 }
