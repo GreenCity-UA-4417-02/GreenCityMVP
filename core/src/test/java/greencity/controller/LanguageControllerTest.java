@@ -27,10 +27,10 @@ public class LanguageControllerTest {
     private MockMvc mockMvc;
 
     @InjectMocks
-    LanguageController languageController;
+    private LanguageController languageController;
 
     @Mock
-    LanguageService languageService;
+    private LanguageService languageService;
 
     private static final String LANGUAGE_LINK = "/language";
 
@@ -42,32 +42,14 @@ public class LanguageControllerTest {
     }
 
     @Test
-    void getAllLanguageCodes_returnsStatusOk() throws Exception {
-        when(languageService.findAllLanguageCodes()).thenReturn(List.of("en"));
-
-        mockMvc.perform(get(LANGUAGE_LINK))
-                .andExpect(status().isOk());
-
-        verify(languageService).findAllLanguageCodes();
-    }
-
-    @Test
-    void getAllLanguageCodes_returnsJsonContentType() throws Exception {
-        when(languageService.findAllLanguageCodes()).thenReturn(List.of("en"));
-
-        mockMvc.perform(get(LANGUAGE_LINK))
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
-
-        verify(languageService).findAllLanguageCodes();
-    }
-
-    @Test
-    void getAllLanguageCodes_returnsExpectedLanguages() throws Exception {
+    void getAllLanguageCodes_returnsValidResponse() throws Exception {
         String[] expectedLanguages = {"en", "ua", "fr"};
         List<String> actualLanguages = List.of("en", "ua", "fr");
         when(languageService.findAllLanguageCodes()).thenReturn(actualLanguages);
 
         mockMvc.perform(get(LANGUAGE_LINK))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.containsInAnyOrder(expectedLanguages)));
 
         verify(languageService).findAllLanguageCodes();
@@ -79,6 +61,8 @@ public class LanguageControllerTest {
         when(languageService.findAllLanguageCodes()).thenReturn(emptyListOfLanguages);
 
         mockMvc.perform(get(LANGUAGE_LINK))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.empty()));
 
         verify(languageService).findAllLanguageCodes();
