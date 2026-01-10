@@ -1,12 +1,16 @@
 package greencity.controller;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.habitfact.HabitFactDtoResponse;
 import greencity.dto.habitfact.HabitFactPostDto;
 import greencity.dto.habitfact.HabitFactUpdateDto;
 import greencity.dto.habitfact.HabitFactVO;
 import greencity.dto.language.LanguageTranslationDTO;
+import greencity.exception.exceptions.NotDeletedException;
+import greencity.exception.handler.CustomExceptionHandler;
 import greencity.service.HabitFactService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,6 +21,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.modelmapper.ModelMapper;
+import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
+import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
@@ -27,8 +33,7 @@ import org.springframework.validation.Validator;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -51,10 +56,16 @@ public class HabitFactControllerTest {
     @Mock
     private Validator mockValidator;
 
+    private ErrorAttributes errorAttributes = new DefaultErrorAttributes();
+
+    private ObjectMapper objectMapper = new ObjectMapper();
+
     @BeforeEach
     void setup() {
         mockMvc = MockMvcBuilders
                 .standaloneSetup(habitFactController)
+                .setControllerAdvice(
+                        new CustomExceptionHandler(errorAttributes, objectMapper))
                 .setValidator(mockValidator)
                 .setCustomArgumentResolvers(
                         new PageableHandlerMethodArgumentResolver()
@@ -188,5 +199,18 @@ public class HabitFactControllerTest {
                 .andExpect(status().isOk());
 
         verify(habitFactService).delete(eq(1L));
+    }
+
+    @Test
+    void deleteHabitFact_shouldReturn400_whenHabitFactNotFound() throws Exception {
+
+        doThrow(new NotDeletedException(ErrorMessage.HABIT_FACT_NOT_DELETED_BY_ID))
+                .when(habitFactService).delete(999L);
+
+        mockMvc.perform(
+                        delete(habitFactControllerLink + "/{id}", 999L))
+                .andExpect(status().isBadRequest());
+
+        verify(habitFactService).delete(999L);
     }
 }
