@@ -1,14 +1,15 @@
 package greencity.controller;
 
 
+import greencity.dto.PageableDto;
 import greencity.dto.habitfact.HabitFactDtoResponse;
 import greencity.dto.habitfact.HabitFactPostDto;
 import greencity.dto.habitfact.HabitFactUpdateDto;
 import greencity.dto.habitfact.HabitFactVO;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.service.HabitFactService;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -16,14 +17,18 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.Validator;
 
+import java.util.List;
+
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -84,6 +89,20 @@ public class HabitFactControllerTest {
         ).andExpect(status().isOk());
 
         verify(habitFactService).getHabitFactOfTheDay(eq(1L));
+    }
+
+    @Test
+    void getAllHabitFacts_shouldReturn200() throws Exception {
+        PageableDto<LanguageTranslationDTO> pageableDto = new PageableDto<>(List.of(), 1L, 0, 0);
+        when(habitFactService.getAllHabitFacts(any(Pageable.class), anyString()))
+                .thenReturn(pageableDto);
+
+        mockMvc.perform(
+                get(habitFactControllerLink)
+                        .header("Accept-Language", "en")
+        ).andExpect(status().isOk());
+
+        verify(habitFactService).getAllHabitFacts(any(Pageable.class), eq("en"));
     }
 
     @Test
