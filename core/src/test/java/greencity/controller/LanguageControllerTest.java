@@ -43,27 +43,26 @@ public class LanguageControllerTest {
 
     @Test
     void getAllLanguageCodes_returnsValidResponse() throws Exception {
-        String[] expectedLanguages = {"en", "ua", "fr"};
         List<String> actualLanguages = List.of("en", "ua", "fr");
-        when(languageService.findAllLanguageCodes()).thenReturn(actualLanguages);
+        String[] expectedLanguages = {"en", "ua", "fr"};
 
-        mockMvc.perform(get(LANGUAGE_LINK))
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.containsInAnyOrder(expectedLanguages)));
-
-        verify(languageService).findAllLanguageCodes();
+        performAndVerifyLanguageCodes(actualLanguages, expectedLanguages);
     }
 
     @Test
     void getAllLanguageCodes_returnsEmptyList() throws Exception {
         List<String> emptyListOfLanguages = List.of();
-        when(languageService.findAllLanguageCodes()).thenReturn(emptyListOfLanguages);
+
+        performAndVerifyLanguageCodes(emptyListOfLanguages, new String[]{});
+    }
+
+    private void performAndVerifyLanguageCodes(List<String> mockResponse, String[] expectedJsonArray) throws Exception {
+        when(languageService.findAllLanguageCodes()).thenReturn(mockResponse);
 
         mockMvc.perform(get(LANGUAGE_LINK))
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.empty()));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.containsInAnyOrder(expectedJsonArray)));
 
         verify(languageService).findAllLanguageCodes();
     }
