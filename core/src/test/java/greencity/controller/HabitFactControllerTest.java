@@ -58,6 +58,21 @@ public class HabitFactControllerTest {
     }
 
     @Test
+    void getRandomFactByHabitId_shouldReturn200() throws Exception {
+        LanguageTranslationDTO languageTranslationDTO = new LanguageTranslationDTO();
+
+        when(habitFactService.getRandomHabitFactByHabitIdAndLanguage(anyLong(), anyString()))
+                .thenReturn(languageTranslationDTO);
+
+        mockMvc.perform(
+                get(habitFactControllerLink + "/random/{habitId}", 1L)
+                        .header("Accept-Language", "en")
+        ).andExpect(status().isOk());
+
+        verify(habitFactService).getRandomHabitFactByHabitIdAndLanguage(eq(1L), eq("en"));
+    }
+
+    @Test
     void getHabitFactOfTheDay_shouldReturn200() throws Exception {
         LanguageTranslationDTO languageTranslationDTO = new LanguageTranslationDTO();
 
