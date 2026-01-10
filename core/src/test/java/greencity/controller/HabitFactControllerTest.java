@@ -32,7 +32,8 @@ import org.springframework.validation.Validator;
 
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -40,25 +41,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 public class HabitFactControllerTest {
+
     private static final String habitFactControllerLink = "/facts";
-
+    private final ErrorAttributes errorAttributes = new DefaultErrorAttributes();
+    private final ObjectMapper objectMapper = new ObjectMapper();
     private MockMvc mockMvc;
-
     @InjectMocks
     private HabitFactController habitFactController;
-
     @Mock
     private HabitFactService habitFactService;
-
     @Mock
     private ModelMapper modelMapper;
-
     @Mock
     private Validator mockValidator;
-
-    private ErrorAttributes errorAttributes = new DefaultErrorAttributes();
-
-    private ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
     void setup() {
@@ -77,43 +72,53 @@ public class HabitFactControllerTest {
     void getRandomFactByHabitId_shouldReturn200() throws Exception {
         LanguageTranslationDTO languageTranslationDTO = new LanguageTranslationDTO();
 
-        when(habitFactService.getRandomHabitFactByHabitIdAndLanguage(anyLong(), anyString()))
+        Long habitId = 1L;
+        String lang = "en";
+
+        when(habitFactService.getRandomHabitFactByHabitIdAndLanguage(habitId, lang))
                 .thenReturn(languageTranslationDTO);
 
         mockMvc.perform(
-                get(habitFactControllerLink + "/random/{habitId}", 1L)
-                        .header("Accept-Language", "en")
+                get(habitFactControllerLink + "/random/{habitId}", habitId)
+                        .header("Accept-Language", lang)
         ).andExpect(status().isOk());
 
-        verify(habitFactService).getRandomHabitFactByHabitIdAndLanguage(eq(1L), eq("en"));
+        verify(habitFactService).getRandomHabitFactByHabitIdAndLanguage(habitId, lang);
     }
 
     @Test
     void getHabitFactOfTheDay_shouldReturn200() throws Exception {
         LanguageTranslationDTO languageTranslationDTO = new LanguageTranslationDTO();
 
-        when(habitFactService.getHabitFactOfTheDay(anyLong()))
+        Long languageId = 1L;
+
+        when(habitFactService.getHabitFactOfTheDay(languageId))
                 .thenReturn(languageTranslationDTO);
 
         mockMvc.perform(
-                get(habitFactControllerLink + "/dayFact/{languageId}", 1L)
+                get(habitFactControllerLink + "/dayFact/{languageId}", languageId)
         ).andExpect(status().isOk());
 
-        verify(habitFactService).getHabitFactOfTheDay(eq(1L));
+        verify(habitFactService).getHabitFactOfTheDay(languageId);
     }
 
     @Test
     void getAllHabitFacts_shouldReturn200() throws Exception {
-        PageableDto<LanguageTranslationDTO> pageableDto = new PageableDto<>(List.of(), 1L, 0, 0);
-        when(habitFactService.getAllHabitFacts(any(Pageable.class), anyString()))
+        LanguageTranslationDTO languageTranslationDTO = new LanguageTranslationDTO();
+        var list = List.of(languageTranslationDTO);
+        var pageableDto = new PageableDto<>(list, 1L, 0, 1);
+
+        String lang = "en";
+
+        when(habitFactService.getAllHabitFacts(any(Pageable.class), eq(lang)))
                 .thenReturn(pageableDto);
 
         mockMvc.perform(
                 get(habitFactControllerLink)
-                        .header("Accept-Language", "en")
+                        .header("Accept-Language", lang)
         ).andExpect(status().isOk());
 
-        verify(habitFactService).getAllHabitFacts(any(Pageable.class), eq("en"));
+        verify(habitFactService).getAllHabitFacts(any(Pageable.class), eq(lang));
     }
 
     @Test
@@ -127,7 +132,7 @@ public class HabitFactControllerTest {
                          "code": "en"
                          },
                         "content": "Use public transport"
-                    } 
+                    }
                 ],
                 "habit": {
                     "id": 1
@@ -175,42 +180,47 @@ public class HabitFactControllerTest {
         HabitFactVO habitFactVo = new HabitFactVO();
         HabitFactPostDto habitFactPostDto = new HabitFactPostDto();
 
-        when(habitFactService.update(any(HabitFactUpdateDto.class), eq(1L)))
+        Long id = 1L;
+
+        when(habitFactService.update(any(HabitFactUpdateDto.class), eq(id)))
                 .thenReturn(habitFactVo);
 
         when(modelMapper.map(any(HabitFactVO.class), eq(HabitFactPostDto.class)))
                 .thenReturn(habitFactPostDto);
         mockMvc.perform(
-                        put(habitFactControllerLink + "/{id}", 1L)
+                        put(habitFactControllerLink + "/{id}", id)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(content)
                 )
                 .andExpect(status().isOk());
 
-        verify(habitFactService).update(any(HabitFactUpdateDto.class), eq(1L));
+        verify(habitFactService).update(any(HabitFactUpdateDto.class), eq(id));
         verify(modelMapper).map(habitFactVo, HabitFactPostDto.class);
     }
 
     @Test
     void deleteHabitFact_shouldReturn200() throws Exception {
 
+        Long id = 1L;
+
         mockMvc.perform(
-                        delete(habitFactControllerLink + "/{id}", 1L))
+                        delete(habitFactControllerLink + "/{id}", id))
                 .andExpect(status().isOk());
 
-        verify(habitFactService).delete(eq(1L));
+        verify(habitFactService).delete(id);
     }
 
     @Test
     void deleteHabitFact_shouldReturn400_whenHabitFactNotFound() throws Exception {
 
+        Long id = 999L;
         doThrow(new NotDeletedException(ErrorMessage.HABIT_FACT_NOT_DELETED_BY_ID))
-                .when(habitFactService).delete(999L);
+                .when(habitFactService).delete(id);
 
         mockMvc.perform(
-                        delete(habitFactControllerLink + "/{id}", 999L))
+                        delete(habitFactControllerLink + "/{id}", id))
                 .andExpect(status().isBadRequest());
 
-        verify(habitFactService).delete(999L);
+        verify(habitFactService).delete(id);
     }
 }
