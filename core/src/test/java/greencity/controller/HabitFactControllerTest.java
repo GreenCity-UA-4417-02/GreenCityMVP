@@ -2,6 +2,7 @@ package greencity.controller;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import greencity.ModelUtils;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.habitfact.HabitFactDtoResponse;
@@ -123,22 +124,9 @@ public class HabitFactControllerTest {
 
     @Test
     void saveHabitFact_shouldReturn201() throws Exception {
-        String content = """
-                {
-                "translations": [
-                    {
-                        "language": {
-                         "id": 1,
-                         "code": "en"
-                         },
-                        "content": "Use public transport"
-                    }
-                ],
-                "habit": {
-                    "id": 1
-                    }
-                }
-                """;
+        HabitFactPostDto habitFactPostDto = ModelUtils.getHabitFactPostDto();
+        String content = objectMapper.writeValueAsString(habitFactPostDto);
+
         HabitFactVO habitFactVo = new HabitFactVO();
         HabitFactDtoResponse responseDto = new HabitFactDtoResponse();
 
@@ -160,23 +148,9 @@ public class HabitFactControllerTest {
 
     @Test
     void updateHabitFact_shouldReturn200() throws Exception {
-        String content = """
-                {
-                    "translations": [
-                        {
-                        "factOfDayStatus": "POTENTIAL",
-                        "language": {
-                            "id": 1,
-                            "code": "en"
-                            },
-                        "content": "some content"
-                        }
-                    ],
-                    "habit": {
-                        "id": 1
-                    }
-                }
-                """;
+        HabitFactUpdateDto habitFactUpdateDto = ModelUtils.getHabitFactUpdateDto();
+        String content = objectMapper.writeValueAsString(habitFactUpdateDto);
+
         HabitFactVO habitFactVo = new HabitFactVO();
         HabitFactPostDto habitFactPostDto = new HabitFactPostDto();
 
