@@ -147,6 +147,7 @@ public class HabitStatisticControllerTest {
                 .andExpect(status().isCreated());
 
         verify(userService).findByEmail("test@gmail.com");
+        verify(habitStatisticService).saveByHabitIdAndUserId(eq(1L), eq(userVO.getId()), any(AddHabitStatisticDto.class));
     }
 
     @Test
