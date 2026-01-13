@@ -24,15 +24,14 @@ public class UpdateEcoNewsDto {
     private String title;
 
     @NotEmpty
+    private String text;
+
+    @NotEmpty
     @Size(min = 20, max = 63206)
     private String content;
 
-    private String shortInfo;
-
     @NotEmpty(message = ServiceValidationConstants.MIN_AMOUNT_OF_TAGS)
     private List<String> tags;
-
-    private String image;
 
     private String source;
 }
