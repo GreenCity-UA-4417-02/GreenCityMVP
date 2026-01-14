@@ -24,9 +24,6 @@ public class UpdateEcoNewsDto {
     private String title;
 
     @NotEmpty
-    private String text;
-
-    @NotEmpty
     @Size(min = 20, max = 63206)
     private String content;
 
