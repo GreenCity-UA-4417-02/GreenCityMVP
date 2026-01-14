@@ -54,23 +54,30 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
      */
     @ExceptionHandler(HttpClientErrorException.class)
     public final ResponseEntity<Object> handleHttpClientErrorException(
-        HttpClientErrorException ex, WebRequest request) throws JsonProcessingException {
+            HttpClientErrorException ex, WebRequest request) throws JsonProcessingException {
         Map<String, String> httpClientResponseBody = jsonHttpClientErrorExceptionToMap(ex);
-        String message = httpClientResponseBody.get("message");
+        String message = httpClientResponseBody.getOrDefault("message", ex.getStatusText());
+
         log.info(ex.getStatusCode() + " " + message);
+
         HttpClientErrorExceptionResponse responseBody =
-            new HttpClientErrorExceptionResponse(getErrorAttributes(request), message);
+                new HttpClientErrorExceptionResponse(getErrorAttributes(request), message);
+
         return ResponseEntity.status(ex.getStatusCode()).body(responseBody);
     }
 
-    private Map<String, String> jsonHttpClientErrorExceptionToMap(
-        HttpClientErrorException ex) throws JsonProcessingException {
-        TypeReference<Map<String, String>> responseType = new TypeReference<>() {
-        };
-        Map<String, String> httpClientResponseBody;
-        httpClientResponseBody = objectMapper.readValue(ex.getResponseBodyAsString(), responseType);
-
-        return httpClientResponseBody;
+    private Map<String, String> jsonHttpClientErrorExceptionToMap(HttpClientErrorException ex) throws JsonProcessingException {
+        String body = ex.getResponseBodyAsString();
+        if (body.isBlank()) {
+            return Collections.emptyMap();
+        }
+        try {
+            TypeReference<Map<String, String>> responseType = new TypeReference<>() {};
+            return objectMapper.readValue(body, responseType);
+        } catch (Exception e) {
+            log.warn("Could not parse error response body: {}", body);
+            return Collections.emptyMap();
+        }
     }
 
     /**
