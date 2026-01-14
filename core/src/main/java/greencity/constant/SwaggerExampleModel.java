@@ -47,7 +47,7 @@ public final class SwaggerExampleModel {
             + IMAGE_DESCRIPTION
             + BEFORE_EXAMPLE
             + "{\n"
-            + "  \"id\": \"string\",\n"
+            + "  \"id\": 0,\n"
             + EXAMPLE
             + "}\n"
             + AFTER_EXAMPLE;
