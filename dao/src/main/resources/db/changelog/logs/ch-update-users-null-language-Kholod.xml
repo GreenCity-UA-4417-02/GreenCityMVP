@@ -6,7 +6,7 @@
 
     <changeSet id="Kholod-1" author="Rostyslav Kholod">
         <update tableName="users">
-            <column name="language_id" valueNumeric="1"/>
+            <column name="language_id" valueNumeric="2"/>
             <where>language_id IS NULL</where>
         </update>
     </changeSet>
