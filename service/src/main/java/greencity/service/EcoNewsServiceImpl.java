@@ -486,6 +486,9 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         if (user.getRole() != Role.ROLE_ADMIN && !user.getId().equals(toUpdate.getAuthor().getId())) {
             throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
+        if (image != null) {
+            toUpdate.setImagePath(fileService.upload(image));
+        }
         enhanceWithNewData(toUpdate, updateEcoNewsDto, image);
         ecoNewsRepo.save(toUpdate);
         return getEcoNewsGenericDtoWithAllTags(toUpdate);

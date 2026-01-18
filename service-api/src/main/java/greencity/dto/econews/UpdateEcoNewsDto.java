@@ -31,4 +31,6 @@ public class UpdateEcoNewsDto {
     private List<String> tags;
 
     private String source;
+
+    private String text;
 }
