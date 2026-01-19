@@ -612,6 +612,22 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(collect);
     }
 
+    /**
+     * Handles {@link LowRoleLevelException}.
+     *
+     * @param ex the exception
+     * @param request the current web request
+     * @return response with HTTP 403 status
+     * @author Zahychenko Alona
+     */
+
+    @ExceptionHandler(LowRoleLevelException.class)
+    public final ResponseEntity<Object> lowRoleLevelException(LowRoleLevelException ex, WebRequest request) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        log.trace(ex.getMessage(), ex);
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(exceptionResponse);
+    }
+
     private Map<String, Object> getErrorAttributes(WebRequest webRequest) {
         return new HashMap<>(errorAttributes.getErrorAttributes(webRequest,
                 ErrorAttributeOptions.of(ErrorAttributeOptions.Include.MESSAGE)));
