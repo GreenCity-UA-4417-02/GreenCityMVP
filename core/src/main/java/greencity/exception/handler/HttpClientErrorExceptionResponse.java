@@ -19,9 +19,9 @@ public class HttpClientErrorExceptionResponse {
      * String message.
      */
     public HttpClientErrorExceptionResponse(Map<String, Object> errorAttributes, String message) {
-        this.path = errorAttributes.get("path").toString();
         this.message = message;
-        this.timeStamp = errorAttributes.get("timestamp").toString();
-        this.trace = errorAttributes.get("trace").toString();
+        this.timeStamp = String.valueOf(errorAttributes.getOrDefault("timestamp", ""));
+        this.path = String.valueOf(errorAttributes.getOrDefault("path", ""));
+        this.trace = String.valueOf(errorAttributes.getOrDefault("trace", ""));
     }
 }

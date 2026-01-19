@@ -91,8 +91,7 @@ public class ModelUtils {
     }
 
     public static AddEcoNewsDtoRequest getAddEcoNewsDtoRequest() {
-        return new AddEcoNewsDtoRequest("title", "text",
-            Collections.singletonList("tag"), null, null, "shortInfo");
+        return new AddEcoNewsDtoRequest("title", "text", Collections.singletonList("tag"), null);
     }
 
     public static AddEcoNewsDtoResponse getAddEcoNewsDtoResponse() {
