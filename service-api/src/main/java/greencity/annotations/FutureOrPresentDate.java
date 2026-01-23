@@ -1,18 +1,17 @@
 package greencity.annotations;
 
-import greencity.validator.ValidImageFormatValidator;
+import greencity.validator.FutureOrPresentDateValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
+
 import java.lang.annotation.*;
 
 @Documented
-@Constraint(validatedBy = ValidImageFormatValidator.class)
+@Constraint(validatedBy = FutureOrPresentDateValidator.class)
 @Target({ElementType.FIELD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ValidImageFormat {
-    String message() default "Invalid image format";
-    String[] allowedFormats() default {"jpg", "jpeg", "png"};
+public @interface FutureOrPresentDate {
+    String message() default "Date cannot be in the past";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }
-

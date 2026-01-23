@@ -1,16 +1,17 @@
 package greencity.annotations;
 
-import greencity.validator.FutureOrPresentDateValidator;
+import greencity.validator.ValidEventTimeValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
+
 import java.lang.annotation.*;
 
 @Documented
-@Constraint(validatedBy = FutureOrPresentDateValidator.class)
-@Target({ElementType.FIELD, ElementType.PARAMETER})
+@Constraint(validatedBy = ValidEventTimeValidator.class)
+@Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface FutureOrPresentDate {
-    String message() default "Date cannot be in the past";
+public @interface ValidEventTime {
+    String message() default "Invalid event time configuration";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }
