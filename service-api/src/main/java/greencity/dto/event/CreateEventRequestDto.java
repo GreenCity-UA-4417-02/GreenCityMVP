@@ -1,5 +1,6 @@
 package greencity.dto.event;
 
+import greencity.annotations.EventTypeConsistency;
 import greencity.enums.EventType;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -8,6 +9,7 @@ import jakarta.validation.constraints.Size;
 
 import java.util.List;
 
+@EventTypeConsistency
 public record CreateEventRequestDto(
         @NotBlank(message = "Event title is required")
         @Size(max = 70, message = "Event title cannot exceed 70 characters")
