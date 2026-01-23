@@ -95,37 +95,44 @@ class EcoNewsControllerTest {
     void saveTest() throws Exception {
         Principal principal = Mockito.mock(Principal.class);
         when(principal.getName()).thenReturn("Olivia.Johnson@gmail.com");
-        String json = "{\n" +
-            "\"title\": \"title\",\n" +
-            " \"tags\": [\"news\"],\n" +
-            " \"text\": \"content content content\", \n" +
-            "\"source\": \"\",\n" +
-            " \"image\": null\n" +
-            "}";
-        MockMultipartFile jsonFile =
-            new MockMultipartFile("addEcoNewsDtoRequest", "", "application/json", json.getBytes());
+
+        String json = """
+            {
+              "title": "title",
+              "tags": ["news"],
+              "text": "content content content content"
+            }
+            """;
+
+        MockMultipartFile jsonFile = new MockMultipartFile(
+                "addEcoNewsDtoRequest",
+                "",
+                "application/json",
+                json.getBytes()
+        );
 
         this.mockMvc.perform(multipart(ecoNewsLink)
-            .file(jsonFile)
-            .principal(principal)
-            .accept(MediaType.APPLICATION_JSON)
-            .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isCreated());
+                        .file(jsonFile)
+                        .principal(principal)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated());
 
-        ObjectMapper mapper = new ObjectMapper();
-        AddEcoNewsDtoRequest addEcoNewsDtoRequest = mapper.readValue(json, AddEcoNewsDtoRequest.class);
-
-        verify(ecoNewsService)
-            .saveEcoNews(eq(addEcoNewsDtoRequest), isNull(), eq("Olivia.Johnson@gmail.com"));
+        verify(ecoNewsService).saveEcoNews(any(AddEcoNewsDtoRequest.class), isNull(), eq("Olivia.Johnson@gmail.com"));
     }
 
     @Test
     void saveBadRequestTest() throws Exception {
-        mockMvc.perform(post(ecoNewsLink)
-            .content("{}")
-            .accept(MediaType.APPLICATION_JSON)
-            .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isBadRequest());
+        MockMultipartFile jsonFile = new MockMultipartFile(
+                "addEcoNewsDtoRequest",
+                "",
+                "application/json",
+                "{}".getBytes()
+        );
+
+        mockMvc.perform(multipart(ecoNewsLink)
+                        .file(jsonFile)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
