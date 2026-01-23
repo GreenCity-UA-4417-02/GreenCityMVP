@@ -1,5 +1,6 @@
 package greencity.service;
 
+import greencity.constant.ErrorMessage;
 import greencity.dto.event.CreateEventRequestDto;
 import greencity.dto.event.EventResponseDto;
 import greencity.entity.User;
@@ -36,13 +37,13 @@ public class EventServiceImpl implements EventService {
         log.info("Creating event with title: '{}' by organizerId: {}", requestDto.title(), organizerId);
 
         User organizer = userRepository.findById(organizerId)
-                .orElseThrow(() -> new NotFoundException("Organizer not found with id: " + organizerId));
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_ORGANIZER_NOT_FOUND + organizerId));
 
         InitiativeType initiativeType = initiativeTypeRepository.findById(requestDto.initiativeTypeId())
-                .orElseThrow(() -> new NotFoundException("Initiative type not found with id: " + requestDto.initiativeTypeId()));
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_INITIATIVE_TYPE_NOT_FOUND + requestDto.initiativeTypeId()));
 
         EventCategory eventCategory = eventCategoryRepository.findById(requestDto.eventCategoryId())
-                .orElseThrow(() -> new NotFoundException("Event category not found with id: " + requestDto.eventCategoryId()));
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_CATEGORY_NOT_FOUND + requestDto.eventCategoryId()));
 
         Event event = modelMapper.map(requestDto, Event.class);
         event.setOrganizer(organizer);
