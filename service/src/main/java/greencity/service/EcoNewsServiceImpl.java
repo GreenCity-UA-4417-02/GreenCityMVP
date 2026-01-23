@@ -449,15 +449,11 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         MultipartFile image) {
         toUpdate.setTitle(updateEcoNewsDto.getTitle());
         toUpdate.setText(updateEcoNewsDto.getContent());
-        toUpdate.setShortInfo(updateEcoNewsDto.getShortInfo());
         toUpdate.setSource(updateEcoNewsDto.getSource());
         toUpdate.setTags(modelMapper.map(tagService
             .findTagsByNamesAndType(updateEcoNewsDto.getTags(), TagType.ECO_NEWS),
             new TypeToken<List<Tag>>() {
             }.getType()));
-        if (updateEcoNewsDto.getImage() != null) {
-            image = fileService.convertToMultipartImage(updateEcoNewsDto.getImage());
-        }
         if (image != null) {
             toUpdate.setImagePath(fileService.upload(image));
         }
@@ -486,6 +482,9 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         EcoNews toUpdate = modelMapper.map(findById(updateEcoNewsDto.getId()), EcoNews.class);
         if (user.getRole() != Role.ROLE_ADMIN && !user.getId().equals(toUpdate.getAuthor().getId())) {
             throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
+        }
+        if (image != null) {
+            toUpdate.setImagePath(fileService.upload(image));
         }
         enhanceWithNewData(toUpdate, updateEcoNewsDto, image);
         ecoNewsRepo.save(toUpdate);
