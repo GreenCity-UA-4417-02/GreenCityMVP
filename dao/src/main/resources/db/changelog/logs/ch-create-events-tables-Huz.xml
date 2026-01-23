@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+    <changeSet id="Huz1" author="YaroslavHuz">
+        <createTable tableName="initiative_types">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="description" type="TEXT"/>
+        </createTable>
+
+        <createTable tableName="event_categories">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="description" type="TEXT"/>
+        </createTable>
+
+        <createTable tableName="events">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="title" type="VARCHAR(70)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="title_image" type="VARCHAR(500)"/>
+            <column name="organizer_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="creation_date" type="DATE" defaultValueDate="CURRENT_DATE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="VARCHAR(63206)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_open" type="BOOLEAN" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="initiative_type_id" type="BIGINT"/>
+            <column name="event_category_id" type="BIGINT"/>
+        </createTable>
+
+        <createTable tableName="events_dates_locations">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="event_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date" type="DATE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="start_time" type="TIME"/>
+            <column name="end_time" type="TIME"/>
+            <column name="is_all_day" type="BOOLEAN" defaultValueBoolean="false"/>
+            <column name="latitude" type="DOUBLE PRECISION"/>
+            <column name="longitude" type="DOUBLE PRECISION"/>
+            <column name="street_en" type="VARCHAR(255)"/>
+            <column name="street_uk" type="VARCHAR(255)"/>
+            <column name="house_number" type="VARCHAR(50)"/>
+            <column name="city_en" type="VARCHAR(255)"/>
+            <column name="city_uk" type="VARCHAR(255)"/>
+            <column name="region_en" type="VARCHAR(255)"/>
+            <column name="region_uk" type="VARCHAR(255)"/>
+            <column name="country_en" type="VARCHAR(255)"/>
+            <column name="country_uk" type="VARCHAR(255)"/>
+            <column name="formatted_address_en" type="TEXT"/>
+            <column name="formatted_address_uk" type="TEXT"/>
+            <column name="online_link" type="VARCHAR(500)"/>
+        </createTable>
+
+        <createTable tableName="events_images">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="link" type="VARCHAR(500)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="event_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_main" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="events_grades">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user_id" type="BIGINT"/>
+            <column name="event_id" type="BIGINT"/>
+            <column name="grade" type="INTEGER"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="Huz2" author="YaroslavHuz">
+        <addForeignKeyConstraint baseTableName="events"
+                                 baseColumnNames="organizer_id"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"
+                                 constraintName="fk_events_organizer"
+                                 onDelete="CASCADE"/>
+
+        <addForeignKeyConstraint baseTableName="events"
+                                 baseColumnNames="initiative_type_id"
+                                 referencedTableName="initiative_types"
+                                 referencedColumnNames="id"
+                                 constraintName="fk_events_initiative_type"
+                                 onDelete="SET NULL"/>
+
+        <addForeignKeyConstraint baseTableName="events"
+                                 baseColumnNames="event_category_id"
+                                 referencedTableName="event_categories"
+                                 referencedColumnNames="id"
+                                 constraintName="fk_events_event_category"
+                                 onDelete="SET NULL"/>
+
+        <addForeignKeyConstraint baseTableName="events_dates_locations"
+                                 baseColumnNames="event_id"
+                                 referencedTableName="events"
+                                 referencedColumnNames="id"
+                                 constraintName="fk_event_dates_event"
+                                 onDelete="CASCADE"/>
+
+        <addForeignKeyConstraint baseTableName="events_images"
+                                 baseColumnNames="event_id"
+                                 referencedTableName="events"
+                                 referencedColumnNames="id"
+                                 constraintName="fk_event_images_event"
+                                 onDelete="CASCADE"/>
+
+        <addForeignKeyConstraint baseTableName="events_grades"
+                                 baseColumnNames="user_id"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"
+                                 constraintName="fk_event_grades_user"
+                                 onDelete="CASCADE"/>
+
+        <addForeignKeyConstraint baseTableName="events_grades"
+                                 baseColumnNames="event_id"
+                                 referencedTableName="events"
+                                 referencedColumnNames="id"
+                                 constraintName="fk_event_grades_event"
+                                 onDelete="CASCADE"/>
+
+    </changeSet>
+
+    <changeSet id="Huz3" author="YaroslavHuz">
+        <createIndex tableName="events" indexName="idx_events_organizer">
+            <column name="organizer_id"/>
+        </createIndex>
+
+        <createIndex tableName="events" indexName="idx_events_creation_date">
+            <column name="creation_date"/>
+        </createIndex>
+
+        <createIndex tableName="events" indexName="idx_events_type">
+            <column name="type"/>
+        </createIndex>
+
+        <createIndex tableName="events_dates_locations" indexName="idx_event_dates_event">
+            <column name="event_id"/>
+        </createIndex>
+
+        <createIndex tableName="events_dates_locations" indexName="idx_event_dates_date">
+            <column name="date"/>
+        </createIndex>
+
+        <createIndex tableName="events_images" indexName="idx_event_images_event">
+            <column name="event_id"/>
+        </createIndex>
+
+        <createIndex tableName="events_images" indexName="idx_event_images_main">
+            <column name="is_main"/>
+        </createIndex>
+
+        <createIndex tableName="events_grades" indexName="idx_event_grades_user_event">
+            <column name="user_id"/>
+            <column name="event_id"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="Huz4" author="YaroslavHuz">
+        <insert tableName="initiative_types">
+            <column name="name" value="Environmental Education"/>
+            <column name="description" value="Events focused on teaching eco-friendly practices and sustainability"/>
+        </insert>
+
+        <insert tableName="initiative_types">
+            <column name="name" value="Community Cleanup"/>
+            <column name="description" value="Events organizing local cleanups and waste management"/>
+        </insert>
+
+        <insert tableName="initiative_types">
+            <column name="name" value="Tree Planting"/>
+            <column name="description" value="Events dedicated to planting trees and urban greening"/>
+        </insert>
+
+        <insert tableName="event_categories">
+            <column name="name" value="Workshop"/>
+            <column name="description" value="Hands-on learning sessions and practical training"/>
+        </insert>
+
+        <insert tableName="event_categories">
+            <column name="name" value="Lecture"/>
+            <column name="description" value="Educational talks and presentations"/>
+        </insert>
+
+        <insert tableName="event_categories">
+            <column name="name" value="Volunteering"/>
+            <column name="description" value="Community service and volunteer activities"/>
+        </insert>
+
+        <insert tableName="event_categories">
+            <column name="name" value="Social Gathering"/>
+            <column name="description" value="Informal meetings and networking events"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>
