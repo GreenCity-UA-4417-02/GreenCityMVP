@@ -42,6 +42,5 @@ public record CreateEventRequestDto(
     public CreateEventRequestDto {
         if (dates == null) dates = List.of();
         if (images == null) images = List.of();
-        isOpen = true;
     }
 }

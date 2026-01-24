@@ -13,13 +13,13 @@ public class ValidEventTimeValidator implements ConstraintValidator<ValidEventTi
     public boolean isValid(EventDateDto dto, ConstraintValidatorContext context) {
         if (dto == null) return true;
 
-        if (LocalDate.now().equals(dto.date()) && dto.startTime() != null) {
-            return !dto.startTime().isBefore(LocalTime.now());
-        }
-
-        if (dto.isAllDay()) {
-            return LocalTime.of(0, 0).equals(dto.startTime()) &&
-                   LocalTime.of(23, 59).equals(dto.endTime());
+        if (LocalDate.now().equals(dto.date())) {
+            if (dto.startTime() != null && dto.startTime().isBefore(LocalTime.now())) {
+                context.buildConstraintViolationWithTemplate(
+                                "Cannot set past time for current date")
+                        .addConstraintViolation();
+                return false;
+            }
         }
 
         return true;

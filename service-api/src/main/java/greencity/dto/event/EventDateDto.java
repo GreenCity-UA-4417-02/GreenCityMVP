@@ -39,10 +39,4 @@ public record EventDateDto(
         if (startTime == null || endTime == null) return true;
         return endTime.isAfter(startTime);
     }
-
-    @AssertTrue(message = "For 'All day' events, time should be from 00:00 to 23:59")
-    private boolean isAllDayTimeValid() {
-        if (!isAllDay) return true;
-        return startTime != null && endTime != null;
-    }
 }

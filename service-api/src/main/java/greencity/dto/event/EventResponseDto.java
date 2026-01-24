@@ -28,6 +28,6 @@ public record EventResponseDto(
         Integer likesCount,
         Integer dislikesCount,
 
-        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+        @JsonFormat(pattern = "yyyy-MM-dd")
         LocalDate createdAt
 ) {}
