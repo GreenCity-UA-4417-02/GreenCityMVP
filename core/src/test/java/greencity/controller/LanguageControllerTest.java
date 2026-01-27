@@ -35,10 +35,10 @@ public class LanguageControllerTest {
     private static final String LANGUAGE_LINK = "/language";
 
     @BeforeEach
-    void setUp(){
+    void setUp() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(languageController)
-                .setMessageConverters(new MappingJackson2HttpMessageConverter())
-                .build();
+            .setMessageConverters(new MappingJackson2HttpMessageConverter())
+            .build();
     }
 
     @Test
@@ -53,7 +53,7 @@ public class LanguageControllerTest {
     void getAllLanguageCodes_returnsEmptyList() throws Exception {
         List<String> emptyListOfLanguages = List.of();
 
-        performAndVerifyLanguageCodes(emptyListOfLanguages, new String[]{});
+        performAndVerifyLanguageCodes(emptyListOfLanguages, new String[] {});
     }
 
     private void performAndVerifyLanguageCodes(List<String> mockResponse, String[] expectedJsonArray) throws Exception {

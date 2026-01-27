@@ -41,7 +41,6 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class HabitControllerTest {
@@ -73,20 +72,19 @@ class HabitControllerTest {
     @BeforeEach
     void setUp() {
         this.mockMvc = MockMvcBuilders
-                .standaloneSetup(habitController)
-                .setCustomArgumentResolvers(
-                        new PageableHandlerMethodArgumentResolver(),
-                        new UserArgumentResolver(userService, modelMapper)
-                )
-                .setControllerAdvice(new CustomExceptionHandler(errorAttributes, objectMapper))
-                .build();
+            .standaloneSetup(habitController)
+            .setCustomArgumentResolvers(
+                new PageableHandlerMethodArgumentResolver(),
+                new UserArgumentResolver(userService, modelMapper))
+            .setControllerAdvice(new CustomExceptionHandler(errorAttributes, objectMapper))
+            .build();
     }
 
     @Test
     void getHabitByIdTest_isOk() throws Exception {
         mockMvc.perform(get(HABIT_CONTROLLER_LINK + "/{id}", 1)
-                        .param("lang", "en"))
-                .andExpect(status().isOk());
+            .param("lang", "en"))
+            .andExpect(status().isOk());
 
         verify(habitService).getByIdAndLanguageCode(1L, "en");
     }
@@ -97,10 +95,10 @@ class HabitControllerTest {
         when(userService.findByEmail(anyString())).thenReturn(userVO);
 
         mockMvc.perform(get(HABIT_CONTROLLER_LINK)
-                .param("page", "1")
-                .principal(principal)
-                .param("lang", "en"))
-                .andExpect(status().isOk());
+            .param("page", "1")
+            .principal(principal)
+            .param("lang", "en"))
+            .andExpect(status().isOk());
 
         verify(habitService).getAllHabitsByLanguageCode(eq(userVO), any(Pageable.class), eq("en"));
     }
@@ -108,7 +106,7 @@ class HabitControllerTest {
     @Test
     void getShoppingListItemsForHabit_isOk() throws Exception {
         mockMvc.perform(get(HABIT_CONTROLLER_LINK + "/{id}/shopping-list", 3))
-                .andExpect(status().isOk());
+            .andExpect(status().isOk());
 
         verify(habitService).getShoppingListForHabit(3L, "en");
     }
@@ -117,9 +115,9 @@ class HabitControllerTest {
     void getHabitsByTagAndLang_isOk() throws Exception {
         List<String> tags = List.of("tag1", "tag2");
         mockMvc.perform(get(HABIT_CONTROLLER_LINK + "/tags/search")
-                    .param("tags", tags.toArray(String[]::new))
-                    .param("lang", "en"))
-                .andExpect(status().isOk());
+            .param("tags", tags.toArray(String[]::new))
+            .param("lang", "en"))
+            .andExpect(status().isOk());
 
         verify(habitService).getAllByTagsAndLanguageCode(any(Pageable.class), eq(tags), eq("en"));
     }
@@ -131,10 +129,10 @@ class HabitControllerTest {
         when(userService.findByEmail(anyString())).thenReturn(userVO);
 
         mockMvc.perform(get(HABIT_CONTROLLER_LINK + "/search")
-                    .param(paramName, "")
-                    .param("lang", "en")
-                    .principal(principal))
-                .andExpect(status().isBadRequest());
+            .param(paramName, "")
+            .param("lang", "en")
+            .principal(principal))
+            .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -145,18 +143,18 @@ class HabitControllerTest {
         when(userService.findByEmail(anyString())).thenReturn(userVO);
 
         mockMvc.perform(get(HABIT_CONTROLLER_LINK + "/search")
-                    .param("tags", tags.toArray(String[]::new))
-                    .param("lang","en")
-                    .principal(principal))
-                .andExpect(status().isOk());
+            .param("tags", tags.toArray(String[]::new))
+            .param("lang", "en")
+            .principal(principal))
+            .andExpect(status().isOk());
 
         verify(habitService).getAllByDifferentParameters(
-                eq(userVO),
-                any(Pageable.class),
-                eq(Optional.of(tags)),
-                eq(Optional.empty()),
-                eq(Optional.empty()),
-                eq("en"));
+            eq(userVO),
+            any(Pageable.class),
+            eq(Optional.of(tags)),
+            eq(Optional.empty()),
+            eq(Optional.empty()),
+            eq("en"));
     }
 
     @Test
@@ -165,17 +163,17 @@ class HabitControllerTest {
         when(userService.findByEmail(anyString())).thenReturn(userVO);
 
         mockMvc.perform(get(HABIT_CONTROLLER_LINK + "/search?isCustomHabit=true")
-                    .param("lang","en")
-                    .principal(principal))
-                .andExpect(status().isOk());
+            .param("lang", "en")
+            .principal(principal))
+            .andExpect(status().isOk());
 
         verify(habitService).getAllByDifferentParameters(
-                eq(userVO),
-                any(Pageable.class),
-                eq(Optional.empty()),
-                eq(Optional.of(true)),
-                eq(Optional.empty()),
-                eq("en"));
+            eq(userVO),
+            any(Pageable.class),
+            eq(Optional.empty()),
+            eq(Optional.of(true)),
+            eq(Optional.empty()),
+            eq("en"));
     }
 
     @Test
@@ -186,24 +184,24 @@ class HabitControllerTest {
         when(userService.findByEmail(anyString())).thenReturn(userVO);
 
         mockMvc.perform(get(HABIT_CONTROLLER_LINK + "/search")
-                    .param("complexities", complexities.stream().map(String::valueOf).toArray(String[]::new))
-                    .param("lang","en")
-                    .principal(principal))
-                .andExpect(status().isOk());
+            .param("complexities", complexities.stream().map(String::valueOf).toArray(String[]::new))
+            .param("lang", "en")
+            .principal(principal))
+            .andExpect(status().isOk());
 
         verify(habitService).getAllByDifferentParameters(
-                eq(userVO),
-                any(Pageable.class),
-                eq(Optional.empty()),
-                eq(Optional.empty()),
-                eq(Optional.of(complexities)),
-                eq("en"));
+            eq(userVO),
+            any(Pageable.class),
+            eq(Optional.empty()),
+            eq(Optional.empty()),
+            eq(Optional.of(complexities)),
+            eq("en"));
     }
 
     @Test
     void getAllHabitsTags_isOk() throws Exception {
         mockMvc.perform(get(HABIT_CONTROLLER_LINK + "/tags"))
-                .andExpect(status().isOk());
+            .andExpect(status().isOk());
 
         verify(tagsService).findAllHabitsTags("en");
     }
@@ -211,41 +209,38 @@ class HabitControllerTest {
     @Test
     void addCustomHabit_isCreated() throws Exception {
         String json = """
-        {
-          "complexity": 2,
-          "tagIds": [1, 2]
-        }
-        """;
+            {
+              "complexity": 2,
+              "tagIds": [1, 2]
+            }
+            """;
 
         MockMultipartFile requestPart = new MockMultipartFile(
-                "request",
-                "request.json",
-                MediaType.APPLICATION_JSON_VALUE,
-                json.getBytes()
-        );
+            "request",
+            "request.json",
+            MediaType.APPLICATION_JSON_VALUE,
+            json.getBytes());
 
         MockMultipartFile imagePart = new MockMultipartFile(
-                "image",
-                "habit.png",
-                MediaType.IMAGE_PNG_VALUE,
-                "image".getBytes()
-        );
+            "image",
+            "habit.png",
+            MediaType.IMAGE_PNG_VALUE,
+            "image".getBytes());
 
         mockMvc.perform(multipart(HABIT_CONTROLLER_LINK + "/custom")
-                        .file(requestPart)
-                        .file(imagePart)
-                        .principal(principal)
-                        .contentType(MediaType.MULTIPART_FORM_DATA))
-                .andExpect(status().isCreated());
+            .file(requestPart)
+            .file(imagePart)
+            .principal(principal)
+            .contentType(MediaType.MULTIPART_FORM_DATA))
+            .andExpect(status().isCreated());
 
         ObjectMapper mapper = new ObjectMapper();
         AddCustomHabitDtoRequest dtoRequest = mapper.readValue(json, AddCustomHabitDtoRequest.class);
 
         verify(habitService).addCustomHabit(
-                eq(dtoRequest),
-                any(MultipartFile.class),
-                eq(principal.getName())
-        );
+            eq(dtoRequest),
+            any(MultipartFile.class),
+            eq(principal.getName()));
     }
 
     @Test
@@ -254,11 +249,9 @@ class HabitControllerTest {
         when(userService.findByEmail(anyString())).thenReturn(userVO);
 
         mockMvc.perform(get(HABIT_CONTROLLER_LINK + "/{habitId}/friends/profile-pictures", 4)
-                    .principal(principal))
-                .andExpect(status().isOk());
+            .principal(principal))
+            .andExpect(status().isOk());
 
         verify(habitService).getFriendsAssignedToHabitProfilePictures(4L, userVO.getId());
     }
 }
-
-
