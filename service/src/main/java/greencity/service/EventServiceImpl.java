@@ -6,6 +6,7 @@ import greencity.entity.User;
 import greencity.entity.event.*;
 import greencity.enums.EventType;
 import greencity.enums.Role;
+import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.ForbiddenException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.*;
@@ -19,6 +20,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -148,7 +151,7 @@ public class EventServiceImpl implements EventService {
 
         if (!isOrganizer && !isAdmin) {
             log.warn("User {} attempted to delete event {} without permissions", userId, eventId);
-            throw new ForbiddenException(ErrorMessage.EVENT_DELETE_FORBIDDEN);
+            throw new ForbiddenException(ErrorMessage.EVENT_FORBIDDEN);
         }
 
         eventRepository.delete(event);
@@ -158,6 +161,148 @@ public class EventServiceImpl implements EventService {
         }
 
         log.info("Event with id: {} deleted successfully by user: {}", eventId, userId);
-        emailNotificationService.sendNotification(modelMapper.map(event, EventDto.class));
+        emailNotificationService.sendDeleteNotification(modelMapper.map(event, EventDto.class));
+    }
+
+    @Override
+    @Transactional
+    public EventResponseDto updateEvent(Long eventId, CreateEventRequestDto requestDto, MultipartFile[] images, Long userId) {
+        log.info("Updating event with id: {} by userId: {}", eventId, userId);
+
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new NotFoundException(String.format(ErrorMessage.EVENT_NOT_FOUND, eventId)));
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
+
+        boolean isOrganizer = event.getOrganizer() != null && event.getOrganizer().getId().equals(userId);
+        boolean isAdmin = user.getRole() == Role.ROLE_ADMIN;
+
+        if (!isOrganizer && !isAdmin) {
+            log.warn("User {} attempted to update event {} without permissions", userId, eventId);
+            throw new ForbiddenException(ErrorMessage.EVENT_FORBIDDEN);
+        }
+
+        LocalDate earliestDate = event.getDates().stream()
+                .map(EventDateLocation::getDate)
+                .min(LocalDate::compareTo)
+                .orElse(LocalDate.now());
+
+        if (earliestDate.isBefore(LocalDate.now())) {
+            log.warn("Attempt to update past event {}", eventId);
+            throw new BadRequestException(ErrorMessage.CANNOT_UPDATE_PAST_EVENT);
+        }
+
+        boolean hasChanges = detectChanges(event, requestDto);
+
+        event.setTitle(requestDto.title());
+        event.setDescription(requestDto.description());
+        event.setType(requestDto.type());
+        event.getDates().clear();
+        event.getDates().addAll(buildEventDates(requestDto, event));
+
+        InitiativeType initiativeType = initiativeTypeRepository.findById(requestDto.initiativeTypeId())
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_INITIATIVE_TYPE_NOT_FOUND + requestDto.initiativeTypeId()));
+        event.setInitiativeType(initiativeType);
+
+        EventCategory eventCategory = eventCategoryRepository.findById(requestDto.eventCategoryId())
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_CATEGORY_NOT_FOUND + requestDto.eventCategoryId()));
+        event.setEventCategory(eventCategory);
+
+        event.setOpen(requestDto.isOpen());
+
+        updateEventImages(images, event);
+
+        Event updatedEvent = eventRepository.save(event);
+        log.info("Event with id: {} updated successfully", eventId);
+
+        if (hasChanges) {
+            emailNotificationService.sendUpdateNotification(modelMapper.map(updatedEvent, EventDto.class));
+        }
+
+        return modelMapper.map(updatedEvent, EventResponseDto.class);
+    }
+
+    private boolean detectChanges(Event oldEvent, CreateEventRequestDto newData) {
+        return !Objects.equals(oldEvent.getTitle(), newData.title())
+                || !Objects.equals(oldEvent.getDescription(), newData.description())
+                || !Objects.equals(oldEvent.getType(), newData.type())
+                || datesChanged(oldEvent.getDates(), newData.dates())
+                || !Objects.equals(Optional.ofNullable(oldEvent.getEventCategory()).map(EventCategory::getId).orElse(null),
+                newData.eventCategoryId())
+                || !Objects.equals(Optional.ofNullable(oldEvent.getInitiativeType()).map(InitiativeType::getId).orElse(null),
+                newData.initiativeTypeId())
+                || !Objects.equals(oldEvent.isOpen(), newData.isOpen())
+                || imagesChanged(oldEvent.getAdditionalImages(), newData.images());
+    }
+
+    private boolean datesChanged(List<EventDateLocation> oldDates, List<EventDateDto> newDates) {
+        if (oldDates.size() != newDates.size()) {
+            return true;
+        }
+
+        for (int i = 0; i < oldDates.size(); i++) {
+            if (dateChanged(oldDates.get(i), newDates.get(i))) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean dateChanged(EventDateLocation oldDate, EventDateDto newDate) {
+        return !Objects.equals(oldDate.getDate(), newDate.date())
+                || !Objects.equals(oldDate.isAllDay(), newDate.isAllDay())
+                || !Objects.equals(oldDate.getStartTime(), newDate.startTime())
+                || !Objects.equals(oldDate.getEndTime(), newDate.endTime())
+                || !Objects.equals(oldDate.getOnlineLink(), newDate.onlineLink())
+                || addressChanged(oldDate.getAddress(), newDate.address());
+    }
+
+    private boolean imagesChanged(List<EventImages> oldImages, List<EventImageDto> newImages) {
+        if (oldImages.size() != newImages.size()) {
+            return true;
+        }
+
+        for (int i = 0; i < oldImages.size(); i++) {
+            if (!Objects.equals(oldImages.get(i).getLink(), newImages.get(i).url())) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean addressChanged(Address oldAddress, AddressDto newAddress) {
+        if (oldAddress == null || newAddress == null) {
+            return !Objects.equals(oldAddress, newAddress);
+        }
+        return !Objects.equals(oldAddress.getLatitude(), newAddress.latitude())
+                || !Objects.equals(oldAddress.getLongitude(), newAddress.longitude())
+                || !Objects.equals(oldAddress.getStreetEn(), newAddress.streetEn())
+                || !Objects.equals(oldAddress.getStreetUk(), newAddress.streetUk())
+                || !Objects.equals(oldAddress.getHouseNumber(), newAddress.houseNumber())
+                || !Objects.equals(oldAddress.getCityEn(), newAddress.cityEn())
+                || !Objects.equals(oldAddress.getCityUk(), newAddress.cityUk())
+                || !Objects.equals(oldAddress.getRegionEn(), newAddress.regionEn())
+                || !Objects.equals(oldAddress.getRegionUk(), newAddress.regionUk())
+                || !Objects.equals(oldAddress.getCountryEn(), newAddress.countryEn())
+                || !Objects.equals(oldAddress.getCountryUk(), newAddress.countryUk())
+                || !Objects.equals(oldAddress.getFormattedAddressEn(), newAddress.formattedAddressEn())
+                || !Objects.equals(oldAddress.getFormattedAddressUk(), newAddress.formattedAddressUk());
+    }
+
+    private void updateEventImages(MultipartFile[] file, Event event) {
+        for (EventImages oldImage : event.getAdditionalImages()) {
+            try {
+                imageService.delete(oldImage.getLink());
+            } catch (Exception e) {
+                log.error("Failed to delete old image: {}", oldImage.getLink(), e);
+            }
+        }
+        event.getAdditionalImages().clear();
+        event.setTitleImage(null);
+
+        event.getAdditionalImages().addAll(processImages(file, event));
     }
 }

@@ -62,4 +62,24 @@ public class EventController {
 
         return ResponseEntity.ok(Map.of("message", "Event deleted successfully"));
     }
+
+    @PutMapping(value = "/{eventId}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    @Operation(summary = "Update event",
+            description = "Update event details. Only organizer or ADMIN can update.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+            @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+            @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
+            @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN),
+            @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND)
+    })
+    public ResponseEntity<EventResponseDto> updateEvent(
+            @PathVariable Long eventId,
+            @RequestPart("requestDto") @Valid CreateEventRequestDto requestDto,
+            @RequestPart(value = "images", required = false) MultipartFile[] images,
+            @Parameter(hidden = true) @CurrentUser UserVO user) {
+
+        EventResponseDto updatedEvent = eventService.updateEvent(eventId, requestDto, images, user.getId());
+        return ResponseEntity.ok(updatedEvent);
+    }
 }

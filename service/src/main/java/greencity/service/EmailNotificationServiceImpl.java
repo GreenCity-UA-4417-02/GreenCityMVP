@@ -34,17 +34,28 @@ public class EmailNotificationServiceImpl implements EmailNotificationService {
     }
 
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
-    public void sendNotification(EventDto eventDto) {
+    @Override
+    public void sendDeleteNotification(EventDto eventDto) {
+        sendNotification(eventDto, "Event Deleted - " + eventDto.title(), "email/event-deletion-notification");
+    }
+
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
+    @Override
+    public void sendUpdateNotification(EventDto eventDto) {
+        sendNotification(eventDto, "Event Updated - " + eventDto.title(), "email/event-update-notification");
+    }
+
+    private void sendNotification(EventDto eventDto, String notificationTitle, String htmlTemplate) {
         try (HttpClient httpClient = HttpClient.newHttpClient()) {
 
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             if (authentication != null
                     && authentication.getDetails() != null
                     && authentication.getDetails() instanceof String token) {
-                String htmlBody = createEventDeletionHtmlFromTemplate(eventDto, authentication.getName());
 
+                String htmlBody = createEventNotificationHtmlFromTemplate(eventDto, authentication.getName(), htmlTemplate);
                 NotificationDto dto = NotificationDto.builder()
-                        .title("Event Deleted - " + eventDto.title())
+                        .title(notificationTitle)
                         .body(htmlBody)
                         .build();
 
@@ -66,7 +77,7 @@ public class EmailNotificationServiceImpl implements EmailNotificationService {
                 HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
                 if (response.statusCode() == 200) {
-                    log.info("Event deletion notification sent to: user {}", eventDto.organizerId());
+                    log.info("Event notification sent to: user {}", eventDto.organizerId());
                 } else {
                     log.error("Failed to send notification. Status: {}", response.statusCode());
                 }
@@ -77,16 +88,16 @@ public class EmailNotificationServiceImpl implements EmailNotificationService {
         }
     }
 
-    private String createEventDeletionHtmlFromTemplate(EventDto eventDto, String deletedBy) {
+    private String createEventNotificationHtmlFromTemplate(EventDto eventDto, String user, String htmlTemplate) {
         Context context = new Context();
         context.setVariable("organizerName", eventDto.organizerName());
         context.setVariable("eventId", eventDto.id());
         context.setVariable("eventTitle", eventDto.title());
-        context.setVariable("deletedBy", deletedBy);
-        context.setVariable("deletionDate", LocalDateTime.now()
+        context.setVariable("adminOrOrganiser", user);
+        context.setVariable("date", LocalDateTime.now()
                 .format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")));
         context.setVariable("clientLink", "http://localhost:4200");
 
-        return templateEngine.process("email/event-deletion-notification", context);
+        return templateEngine.process(htmlTemplate, context);
     }
 }

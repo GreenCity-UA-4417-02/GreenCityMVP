@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml"
+      th:with="lang=${language}" th:lang="${lang}">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>Event Deleted</title>
+    <title>Event Updated</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style type="text/css">
         @media screen {
@@ -115,9 +116,9 @@
             <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
                 <tr>
                     <td align="left" bgcolor="#ffffff"
-                        style="padding: 36px 24px 0; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; border-top: 3px solid #d9534f;">
-                        <h2 style="margin: 0; font-size: 24px; font-weight: 700; letter-spacing: -1px; line-height: 48px; color: #d9534f;">
-                            Event Deleted
+                        style="padding: 36px 24px 0; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; border-top: 3px solid #0275d8;">
+                        <h2 style="margin: 0; font-size: 24px; font-weight: 700; letter-spacing: -1px; line-height: 48px; color: #0275d8;">
+                            Event Updated
                         </h2>
                     </td>
                 </tr>
@@ -146,7 +147,7 @@
                     <td align="left" bgcolor="#ffffff"
                         style="padding: 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px;">
                         <p style="margin: 0;">
-                            Dear <strong><span th:text="${organizerName}">Organizer</span></strong>,
+                            Dear <strong><span th:text="${organizerName}">Attendee</span></strong>,
                         </p>
                     </td>
                 </tr>
@@ -157,7 +158,7 @@
                     <td align="left" bgcolor="#ffffff"
                         style="padding: 0 24px 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px;">
                         <p style="margin: 0;">
-                            We regret to inform you that your event has been deleted from the GreenCity platform.
+                            The event has been updated. Please review the changes below.
                         </p>
                     </td>
                 </tr>
@@ -170,7 +171,7 @@
                             <tr>
                                 <td style="padding: 20px;">
                                     <h3 style="margin: 0 0 16px 0; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 700; color: #333;">
-                                        Event Details
+                                        Updated Event Details
                                     </h3>
 
                                     <table border="0" cellpadding="0" cellspacing="0" width="100%">
@@ -198,10 +199,10 @@
                                         </tr>
                                         <tr>
                                             <td style="padding: 8px 0; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 14px;">
-                                                <strong>Deleted By:</strong>
+                                                <strong>Updated By:</strong>
                                             </td>
                                             <td style="padding: 8px 0; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 14px; text-align: right;">
-                                                <span th:text="${adminOrOrganiser}">Administrator</span>
+                                                <span th:text="${adminOrOrganiser}">Organizer</span>
                                             </td>
                                         </tr>
                                         <tr>
@@ -209,7 +210,7 @@
                                         </tr>
                                         <tr>
                                             <td style="padding: 8px 0; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 14px;">
-                                                <strong>Deletion Date:</strong>
+                                                <strong>Update Date:</strong>
                                             </td>
                                             <td style="padding: 8px 0; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 14px; text-align: right;">
                                                 <span th:text="${date}">14.02.2026 15:30</span>
@@ -223,16 +224,16 @@
                 </tr>
                 <!-- end event details box -->
 
-                <!-- start support message -->
+                <!-- start cta message -->
                 <tr>
                     <td align="left" bgcolor="#ffffff"
                         style="padding: 0 24px 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px;">
                         <p style="margin: 0;">
-                            If you have any questions or believe this was done in error, please contact our support team.
+                            Click the button below to view the full event details and stay updated.
                         </p>
                     </td>
                 </tr>
-                <!-- end support message -->
+                <!-- end cta message -->
 
                 <!-- start button -->
                 <tr>
@@ -245,7 +246,7 @@
                                             <td align="center" bgcolor="#13aa57" style="border-radius: 6px;">
                                                 <a th:href="${clientLink}" target="_blank"
                                                    style="display: inline-block; padding: 16px 36px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; color: #ffffff; text-decoration: none; border-radius: 6px;">
-                                                    Visit GreenCity
+                                                    View Event Details
                                                 </a>
                                             </td>
                                         </tr>
