@@ -138,8 +138,8 @@ public final class ErrorMessage {
     public static final String EVENT_ORGANIZER_NOT_FOUND = "Organizer not found with id: ";
     public static final String EVENT_IMAGE_CONTENT_NOT_FOUND = "Image content not found with id: ";
     public static final String EVENT_NOT_FOUND = "Event with id %d not found";
-    public static final String EVENT_DELETE_FORBIDDEN = "Only event organizer or admin is support to delete events";
-
+    public static final String EVENT_FORBIDDEN = "Only event organizer or admin can manage event";
+    public static final String CANNOT_UPDATE_PAST_EVENT = "Cannot update past events";
 
     private ErrorMessage() {
     }
