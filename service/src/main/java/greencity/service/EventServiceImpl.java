@@ -1,13 +1,12 @@
 package greencity.service;
 
 import greencity.constant.ErrorMessage;
-import greencity.dto.event.CreateEventRequestDto;
-import greencity.dto.event.EventDateDto;
-import greencity.dto.event.EventImageContentDto;
-import greencity.dto.event.EventResponseDto;
+import greencity.dto.event.*;
 import greencity.entity.User;
 import greencity.entity.event.*;
 import greencity.enums.EventType;
+import greencity.enums.Role;
+import greencity.exception.exceptions.ForbiddenException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +32,7 @@ public class EventServiceImpl implements EventService {
     private final EventImageContentRepository eventImageContentRepository;
     private final ModelMapper modelMapper;
     private final ImageService imageService;
+    private final EmailNotificationService emailNotificationService;
 
     @Override
     public EventResponseDto createEvent(CreateEventRequestDto requestDto, MultipartFile[] images, Long organizerId) {
@@ -131,5 +131,33 @@ public class EventServiceImpl implements EventService {
         }
 
         return dates;
+    }
+
+    @Override
+    public void deleteEvent(Long eventId, Long userId) {
+        log.info("Deleting event with id: {} by userId: {}", eventId, userId);
+
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new NotFoundException(String.format(ErrorMessage.EVENT_NOT_FOUND, eventId)));
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
+
+        boolean isOrganizer = event.getOrganizer() != null && event.getOrganizer().getId().equals(userId);
+        boolean isAdmin = user.getRole() == Role.ROLE_ADMIN;
+
+        if (!isOrganizer && !isAdmin) {
+            log.warn("User {} attempted to delete event {} without permissions", userId, eventId);
+            throw new ForbiddenException(ErrorMessage.EVENT_DELETE_FORBIDDEN);
+        }
+
+        eventRepository.delete(event);
+
+        for (EventImages image : event.getAdditionalImages()) {
+            imageService.delete(image.getLink());
+        }
+
+        log.info("Event with id: {} deleted successfully by user: {}", eventId, userId);
+        emailNotificationService.sendNotification(modelMapper.map(event, EventDto.class));
     }
 }

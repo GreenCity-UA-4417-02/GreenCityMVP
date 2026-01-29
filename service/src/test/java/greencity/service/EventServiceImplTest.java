@@ -3,13 +3,13 @@ package greencity.service;
 import greencity.ModelUtils;
 import greencity.constant.ErrorMessage;
 import greencity.dto.event.CreateEventRequestDto;
+import greencity.dto.event.EventDto;
 import greencity.dto.event.EventImageContentDto;
 import greencity.dto.event.EventResponseDto;
 import greencity.entity.User;
-import greencity.entity.event.Event;
-import greencity.entity.event.EventCategory;
-import greencity.entity.event.EventImageContent;
-import greencity.entity.event.InitiativeType;
+import greencity.entity.event.*;
+import greencity.enums.Role;
+import greencity.exception.exceptions.ForbiddenException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.*;
 import org.junit.jupiter.api.Test;
@@ -21,6 +21,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -51,6 +53,9 @@ class EventServiceImplTest {
 
     @Mock
     private ImageService imageService;
+
+    @Mock
+    private EmailNotificationService emailNotificationService;
 
     @InjectMocks
     private EventServiceImpl eventService;
@@ -177,5 +182,153 @@ class EventServiceImplTest {
         assertNotNull(result);
         assertEquals(responseDto.title(), result.title());
         verify(imageService, never()).upload(any());
+    }
+
+    @Test
+    void deleteEventTest() {
+        Long eventId = 1L;
+        Long userId = 2L;
+        Event event = new Event();
+        event.setId(eventId);
+        event.setTitle("title");
+        User user = new User();
+        user.setId(userId);
+        user.setRole(Role.ROLE_USER);
+        user.setName("Organiser");
+        user.setEmail("example@gmail.com");
+        event.setOrganizer(user);
+
+        List<EventImages> images = new ArrayList<>();
+
+        EventImages image = new EventImages();
+        image.setId(1L);
+        image.setLink("https://example.com/image.jpg");
+        image.setEvent(event);
+        images.add(image);
+
+        event.setAdditionalImages(images);
+
+        EventDto eventDto = new EventDto(eventId, event.getTitle(), userId, user.getEmail(), user.getName());
+
+        when(eventRepository.findById(eventId)).thenReturn(Optional.of(event));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(modelMapper.map(any(Event.class), eq(EventDto.class))).thenReturn(eventDto);
+
+        eventService.deleteEvent(eventId, userId);
+
+        verify(eventRepository).findById(eventId);
+        verify(userRepository).findById(userId);
+        verify(eventRepository).delete(event);
+        verify(imageService).delete("https://example.com/image.jpg");
+        verify(modelMapper).map(event, EventDto.class);
+        verify(emailNotificationService).sendNotification(eventDto);
+    }
+
+    @Test
+    void deleteEventAsAdminTest() {
+        Long eventId = 1L;
+        Long userId = 2L;
+        Event event = new Event();
+        event.setId(eventId);
+        event.setTitle("title");
+        User user = new User();
+        user.setId(userId);
+        user.setRole(Role.ROLE_ADMIN);
+
+        User organizer = new User();
+        organizer.setId(3L);
+        organizer.setName("Organiser");
+        organizer.setEmail("example@gmail.com");
+        event.setOrganizer(organizer);
+
+        List<EventImages> images = new ArrayList<>();
+
+        EventImages image = new EventImages();
+        image.setId(1L);
+        image.setLink("https://example.com/image.jpg");
+        image.setEvent(event);
+        images.add(image);
+
+        event.setAdditionalImages(images);
+
+        EventDto eventDto = new EventDto(eventId, event.getTitle(), organizer.getId(), organizer.getEmail(), organizer.getName());
+
+        when(eventRepository.findById(eventId)).thenReturn(Optional.of(event));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(modelMapper.map(any(Event.class), eq(EventDto.class))).thenReturn(eventDto);
+
+        eventService.deleteEvent(eventId, userId);
+
+        verify(eventRepository).findById(eventId);
+        verify(userRepository).findById(userId);
+        verify(eventRepository).delete(event);
+        verify(imageService).delete("https://example.com/image.jpg");
+        verify(modelMapper).map(event, EventDto.class);
+        verify(emailNotificationService).sendNotification(eventDto);
+    }
+
+    @Test
+    void deleteEventAsNeitherAdminNorOrganizerTest() {
+        Long eventId = 1L;
+        Long userId = 2L;
+        Event event = new Event();
+        event.setId(eventId);
+        User user = new User();
+        user.setId(userId);
+        user.setRole(Role.ROLE_USER);
+        event.setOrganizer(user);
+
+        User organizer = new User();
+        organizer.setId(3L);
+        event.setOrganizer(organizer);
+
+        when(eventRepository.findById(eventId)).thenReturn(Optional.of(event));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+
+        ForbiddenException exception = assertThrows(ForbiddenException.class, () -> eventService.deleteEvent(eventId, userId));
+
+        assertEquals("Only event organizer or admin is support to delete events", exception.getMessage());
+        verify(eventRepository).findById(eventId);
+        verify(userRepository).findById(userId);
+        verifyNoMoreInteractions(eventRepository);
+        verifyNoInteractions(imageService);
+        verifyNoInteractions(emailNotificationService);
+    }
+
+    @Test
+    void deleteEventEventNotFoundTest() {
+        Long eventId = 1L;
+        Long userId = 2L;
+
+        when(eventRepository.findById(eventId)).thenReturn(Optional.empty());
+
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> eventService.deleteEvent(eventId, userId));
+
+        assertEquals("Event with id 1 not found", exception.getMessage());
+        verify(eventRepository).findById(eventId);
+        verifyNoInteractions(userRepository);
+        verifyNoMoreInteractions(eventRepository);
+        verifyNoInteractions(imageService);
+        verifyNoInteractions(emailNotificationService);
+    }
+
+    @Test
+    void deleteEventUserNotFoundTest() {
+        Long eventId = 1L;
+        Long userId = 2L;
+        Event event = new Event();
+        event.setId(eventId);
+
+        when(eventRepository.findById(eventId)).thenReturn(Optional.of(event));
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> eventService.deleteEvent(eventId, userId));
+
+        assertEquals("The user does not exist by this id: 2", exception.getMessage());
+        verify(eventRepository).findById(eventId);
+        verify(userRepository).findById(userId);
+        verifyNoMoreInteractions(eventRepository);
+        verifyNoInteractions(imageService);
+        verifyNoInteractions(emailNotificationService);
     }
 }

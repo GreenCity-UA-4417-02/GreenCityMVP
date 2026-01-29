@@ -18,6 +18,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/events")
@@ -42,5 +43,23 @@ public class EventController {
 
         EventResponseDto createdEvent = eventService.createEvent(createEventRequestDto, images, user.getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(createdEvent);
+    }
+
+    @DeleteMapping("/{eventId}")
+    @Operation(summary = "Delete event by ID",
+            description = "Delete event. Only event organizer or ADMIN can delete event.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+            @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
+            @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN),
+            @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND)
+    })
+    public ResponseEntity<Map<String, String>> deleteEvent(
+            @PathVariable Long eventId,
+            @Parameter(hidden = true) @CurrentUser UserVO user) {
+
+        eventService.deleteEvent(eventId, user.getId());
+
+        return ResponseEntity.ok(Map.of("message", "Event deleted successfully"));
     }
 }
