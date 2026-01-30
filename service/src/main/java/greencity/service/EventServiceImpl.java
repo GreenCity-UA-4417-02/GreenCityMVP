@@ -1,4 +1,4 @@
-package greencity.service;
+package greencity.service.impl;
 
 import greencity.constant.ErrorMessage;
 import greencity.dto.event.CreateEventRequestDto;
@@ -6,11 +6,14 @@ import greencity.dto.event.EventResponseDto;
 import greencity.entity.User;
 import greencity.entity.event.*;
 import greencity.enums.EventType;
+import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.EventCategoryRepository;
 import greencity.repository.EventRepository;
 import greencity.repository.InitiativeTypeRepository;
 import greencity.repository.UserRepo;
+import greencity.service.EventService;
+import greencity.service.ImageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -18,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +36,7 @@ public class EventServiceImpl implements EventService {
     private final InitiativeTypeRepository initiativeTypeRepository;
     private final EventCategoryRepository eventCategoryRepository;
     private final ModelMapper modelMapper;
+    private final ImageService imageService;
 
     @Override
     public EventResponseDto createEvent(CreateEventRequestDto requestDto, MultipartFile[] images, Long organizerId) {
@@ -54,12 +59,46 @@ public class EventServiceImpl implements EventService {
         event.setType(EventType.valueOf(requestDto.type().name()));
 
         event.setDates(buildEventDates(requestDto, event));
-        event.setAdditionalImages(buildEventImages(requestDto, event));
+
+        if (images != null && images.length > 0) {
+            event.setAdditionalImages(processImages(images, event));
+        }
 
         Event savedEvent = eventRepository.save(event);
         log.info("Event created successfully with id: {}", savedEvent.getId());
 
         return modelMapper.map(savedEvent, EventResponseDto.class);
+    }
+
+    private List<EventImages> processImages(MultipartFile[] files, Event event) {
+        List<EventImages> eventImages = new ArrayList<>();
+
+        for (int i = 0; i < files.length; i++) {
+            MultipartFile file = files[i];
+            try {
+                String link = imageService.upload(file);
+                byte[] data = file.getBytes();
+
+                boolean isMain = (i == 0);
+
+                EventImages imageEntity = EventImages.builder()
+                        .link(link)
+                        .data(data)
+                        .event(event)
+                        .isMain(isMain)
+                        .build();
+
+                eventImages.add(imageEntity);
+
+                if (isMain) {
+                    event.setTitleImage(link);
+                }
+            } catch (IOException e) {
+                log.error("Error while processing file: {}", file.getOriginalFilename());
+                throw new BadRequestException("Failed to read image data: " + file.getOriginalFilename());
+            }
+        }
+        return eventImages;
     }
 
     private List<EventDateLocation> buildEventDates(CreateEventRequestDto requestDto, Event event) {
@@ -94,37 +133,5 @@ public class EventServiceImpl implements EventService {
         }
 
         return dates;
-    }
-
-    private List<EventImages> buildEventImages(CreateEventRequestDto requestDto, Event event) {
-        if (requestDto.images() == null || requestDto.images().isEmpty()) {
-            return new ArrayList<>();
-        }
-
-        List<EventImages> images = new ArrayList<>();
-        boolean hasMainImage = false;
-
-        for (greencity.dto.event.EventImageDto imageDto : requestDto.images()) {
-            EventImages eventImage = EventImages.builder()
-                    .link(imageDto.url())
-                    .event(event)
-                    .isMain(imageDto.isMain())
-                    .build();
-
-            images.add(eventImage);
-
-            if (imageDto.isMain()) {
-                hasMainImage = true;
-                event.setTitleImage(imageDto.url());
-            }
-        }
-
-        if (!hasMainImage && !images.isEmpty()) {
-            EventImages firstImage = images.getFirst();
-            firstImage.setMain(true);
-            event.setTitleImage(firstImage.getLink());
-        }
-
-        return images;
     }
 }
