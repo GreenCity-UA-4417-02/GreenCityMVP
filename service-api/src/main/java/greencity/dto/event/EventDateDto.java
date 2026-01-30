@@ -20,10 +20,10 @@ public record EventDateDto(
         @JsonFormat(pattern = "yyyy-MM-dd")
         LocalDate date,
 
-        @JsonFormat(pattern = "HH:mm")
+        @JsonFormat(pattern = "HH:mm:ss")
         LocalTime startTime,
 
-        @JsonFormat(pattern = "HH:mm")
+        @JsonFormat(pattern = "HH:mm:ss")
         LocalTime endTime,
 
         boolean isAllDay,
@@ -35,7 +35,7 @@ public record EventDateDto(
         String onlineLink
 ) {
     @AssertTrue(message = "End time must be after start time")
-    private boolean isEndTimeAfterStartTime() {
+    public boolean isValidTimeRange() {
         if (startTime == null || endTime == null) return true;
         return endTime.isAfter(startTime);
     }
