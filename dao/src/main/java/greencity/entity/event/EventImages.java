@@ -24,6 +24,10 @@ public class EventImages {
     @NotBlank(message = "Image link is required")
     private String link;
 
+    @Lob
+    @Column(name = "data")
+    private byte[] data;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id", nullable = false)
     private Event event;
@@ -31,17 +35,19 @@ public class EventImages {
     @Column(nullable = false)
     private boolean isMain = false;
 
-    public static EventImages createMainImage(String link, Event event) {
+    public static EventImages createMainImage(String link, byte[] data, Event event) {
         return EventImages.builder()
                 .link(link)
+                .data(data)
                 .event(event)
                 .isMain(true)
                 .build();
     }
 
-    public static EventImages createAdditionalImage(String link, Event event) {
+    public static EventImages createAdditionalImage(String link, byte[] data, Event event) {
         return EventImages.builder()
                 .link(link)
+                .data(data)
                 .event(event)
                 .isMain(false)
                 .build();
