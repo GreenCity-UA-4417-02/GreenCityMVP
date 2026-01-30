@@ -34,8 +34,12 @@ public final class SwaggerExampleModel {
             + AFTER_EXAMPLE;
 
     public static final String ADD_ECO_NEWS_REQUEST =
+<<<<<<< Updated upstream
             "Add Eco News Request\n"
             + IMAGE_DESCRIPTION
+=======
+        "Add Eco News Request\n"
+>>>>>>> Stashed changes
             + BEFORE_EXAMPLE
             + "{\n"
             + EXAMPLE
