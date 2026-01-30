@@ -14,8 +14,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/events")
@@ -24,7 +26,7 @@ import org.springframework.web.bind.annotation.*;
 public class EventController {
     private final EventService eventService;
 
-    @PostMapping
+    @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @Operation(summary = "Create a new event",
             description = "Create event according to Acceptance Criteria requirements")
     @ApiResponses(value = {
@@ -34,10 +36,11 @@ public class EventController {
             @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND)
     })
     public ResponseEntity<EventResponseDto> createEvent(
-            @Valid @RequestBody CreateEventRequestDto requestDto,
+            @RequestPart("requestDto") @Valid CreateEventRequestDto createEventRequestDto,
+            @RequestPart(value = "images", required = false) MultipartFile[] images,
             @Parameter(hidden = true) @CurrentUser UserVO user) {
 
-        EventResponseDto createdEvent = eventService.createEvent(requestDto, user.getId());
+        EventResponseDto createdEvent = eventService.createEvent(createEventRequestDto, images, user.getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(createdEvent);
     }
 }

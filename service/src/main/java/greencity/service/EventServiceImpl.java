@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -33,7 +34,7 @@ public class EventServiceImpl implements EventService {
     private final ModelMapper modelMapper;
 
     @Override
-    public EventResponseDto createEvent(CreateEventRequestDto requestDto, Long organizerId) {
+    public EventResponseDto createEvent(CreateEventRequestDto requestDto, MultipartFile[] images, Long organizerId) {
         log.info("Creating event with title: '{}' by organizerId: {}", requestDto.title(), organizerId);
 
         User organizer = userRepository.findById(organizerId)
