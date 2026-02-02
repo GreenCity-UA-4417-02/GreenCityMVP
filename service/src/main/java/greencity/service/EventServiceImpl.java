@@ -21,7 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,7 +60,8 @@ public class EventServiceImpl implements EventService {
         event.setDates(buildEventDates(requestDto, event));
 
         if (images != null && images.length > 0) {
-            event.setAdditionalImages(processImages(images, event));
+            List<EventImages> eventImages = processImages(images, event);
+            event.setAdditionalImages(eventImages);
         }
 
         Event savedEvent = eventRepository.save(event);
@@ -75,15 +75,13 @@ public class EventServiceImpl implements EventService {
 
         for (int i = 0; i < files.length; i++) {
             MultipartFile file = files[i];
-            try {
+            if (file != null && !file.isEmpty()) {
                 String link = imageService.upload(file);
-                byte[] data = file.getBytes();
 
                 boolean isMain = (i == 0);
 
                 EventImages imageEntity = EventImages.builder()
                         .link(link)
-                        .data(data)
                         .event(event)
                         .isMain(isMain)
                         .build();
@@ -93,9 +91,6 @@ public class EventServiceImpl implements EventService {
                 if (isMain) {
                     event.setTitleImage(link);
                 }
-            } catch (IOException e) {
-                log.error("Error while processing file: {}", file.getOriginalFilename());
-                throw new BadRequestException("Failed to read image data: " + file.getOriginalFilename());
             }
         }
         return eventImages;

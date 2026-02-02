@@ -179,5 +179,6 @@
     <include file="db/changelog/logs/ch-update-users-null-language-Kholod.xml"/>
     <include file="db/changelog/logs/ch-create-events-tables-Huz.xml"/>
     <include file="db/changelog/logs/ch-update-events-images-blob-Huz.xml"/>
+    <include file="db/changelog/logs/ch-update-event-images-content-table-Huz.xml"/>
 </databaseChangeLog>
 
