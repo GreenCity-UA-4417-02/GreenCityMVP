@@ -18,7 +18,6 @@ import java.io.IOException;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@ConditionalOnProperty(name = "greencity.images.strategy", havingValue = "database", matchIfMissing = true)
 public class BlobImageServiceImpl implements ImageService {
     private final EventImageContentRepository eventImageContentRepository;
     private static final String BASE_URL = "/events/images/content/";
