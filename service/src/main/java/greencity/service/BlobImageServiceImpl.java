@@ -23,7 +23,7 @@ public class BlobImageServiceImpl implements ImageService {
     private static final String BASE_URL = "/events/images/content/";
 
     @Override
-    public String upload(MultipartFile image) {
+    public EventImageContentDto upload(MultipartFile image) {
         if (image == null || image.isEmpty()) {
             throw new NotSavedException("Image is empty and cannot be saved");
         }
@@ -36,7 +36,14 @@ public class BlobImageServiceImpl implements ImageService {
 
             EventImageContent savedContent = eventImageContentRepository.save(content);
 
-            return BASE_URL + savedContent.getId();
+            String link = "/events/images/content/" + savedContent.getId();
+
+            return EventImageContentDto.builder()
+                    .id(savedContent.getId())
+                    .imageData(savedContent.getImageData())
+                    .contentType(savedContent.getContentType())
+                    .link(link)
+                    .build();
         } catch (IOException e) {
             log.error("Failed to save image to database: {}", e.getMessage());
             throw new NotSavedException("Failed to convert image to bytes");
