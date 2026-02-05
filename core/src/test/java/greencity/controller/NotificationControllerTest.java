@@ -38,7 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public class NotificationControllerTest {
+class NotificationControllerTest {
 
     private static final String HABIT_CONTROLLER_LINK = "/notifications";
 
