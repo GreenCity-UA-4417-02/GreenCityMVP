@@ -178,5 +178,7 @@
     <include file="db/changelog/logs/ch-drop-user-friends-table-Bokalo.xml"/>
     <include file="db/changelog/logs/ch-add-table-notifications-Zahychenko.xml"/>
     <include file="db/changelog/logs/ch-update-users-null-language-Kholod.xml"/>
+    <include file="db/changelog/logs/ch-add-index-notifications-recipient-created-at-Zahychenko.xml"/>
+
 </databaseChangeLog>
 
