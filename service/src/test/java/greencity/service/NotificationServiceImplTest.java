@@ -3,13 +3,11 @@ package greencity.service;
 import greencity.client.RestClient;
 import greencity.dto.PageableDto;
 import greencity.dto.notification.NotificationResponseDto;
-import greencity.dto.user.UserVO;
 import greencity.entity.Notification;
 import greencity.mapping.NotificationDtoResponseMapper;
 import greencity.repository.NotificationRepo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -19,13 +17,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
 
 import static greencity.enums.NotificationAction.LIKED;
 import static java.time.LocalDateTime.now;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -48,24 +45,25 @@ class NotificationServiceImplTest {
 
         Long userId = 1L;
         String actorName = "John";
-        Pageable pageable = PageRequest.of(0, 20);
-        Notification notification = createNotification(1L, 2L);
 
-        NotificationResponseDto dto = createNotificationResponseDto(actorName);
+        Pageable pageable = PageRequest.of(0, 20);
+        Notification notification = createNotification(userId, 2L);
 
         Page<Notification> page = new PageImpl<>(Collections.singletonList(notification));
 
-        when(notificationRepo.findAllByRecipientUserIdOrderByCreatedAtDesc(userId, pageable)).thenReturn(page);
-        when(restClient.findById(2L)).thenReturn(
-                UserVO.builder()
-                        .id(2L)
-                        .name("John").build());
-        when(notificationDtoResponseMapper.convert(notification, "John")).thenReturn(dto);
+        Map<Long, String> actorsName = Map.of(2L, actorName);
+        NotificationResponseDto dto = createNotificationResponseDto(actorName);
 
-        PageableDto<NotificationResponseDto> allNotification = notificationServiceImpl.getAllNotificationsForUser(userId, pageable);
+        when(notificationRepo.findAllByRecipientUserIdOrderByCreatedAtDesc(userId, pageable))
+                .thenReturn(page);
+        when(restClient.findUserNamesByUserIds(Set.of(2L))).thenReturn(actorsName);
+        when(notificationDtoResponseMapper.convert(notification, actorName)).thenReturn(dto);
+
+        PageableDto<NotificationResponseDto> allNotification = notificationServiceImpl
+                .getAllNotificationsForUser(userId, pageable);
 
         assertEquals(1, allNotification.getPage().size());
-        assertEquals(1, allNotification.getTotalElements());
+        assertEquals("John", allNotification.getPage().getFirst().getActorName());
     }
 
     @Test
@@ -78,15 +76,14 @@ class NotificationServiceImplTest {
         Page<Notification> page = new PageImpl<>(Collections.singletonList(notification));
 
         when(notificationRepo.findAllByRecipientUserIdOrderByCreatedAtDesc(userId, pageable)).thenReturn(page);
-        when(restClient.findById(2L)).thenThrow(new RuntimeException("Unknown user"));
-        when(notificationDtoResponseMapper.convert(any(), any())).thenReturn(createNotificationResponseDto("any"));
+        when(restClient.findUserNamesByUserIds(Set.of(2L))).thenReturn(Collections.emptyMap());
+        when(notificationDtoResponseMapper.convert(notification, "Unknown user"))
+                .thenReturn(createNotificationResponseDto("Unknown user"));
 
-        PageableDto<NotificationResponseDto> allNotification = notificationServiceImpl.getAllNotificationsForUser(userId, pageable);
+        PageableDto<NotificationResponseDto> allNotification = notificationServiceImpl
+                .getAllNotificationsForUser(userId, pageable);
 
-        ArgumentCaptor<String> actorNameCaptor = ArgumentCaptor.forClass(String.class);
-        verify(notificationDtoResponseMapper).convert(eq(notification), actorNameCaptor.capture());
-
-        assertEquals("Unknown user", actorNameCaptor.getValue());
+        assertEquals("Unknown user", allNotification.getPage().getFirst().getActorName());
         assertEquals(1, allNotification.getPage().size());
     }
 
