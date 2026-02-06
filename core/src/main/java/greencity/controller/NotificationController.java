@@ -34,7 +34,8 @@ public class NotificationController {
     })
     @GetMapping
     public PageableDto<NotificationResponseDto> getAllNotificationsForUser(
-            @Parameter(hidden = true) @CurrentUser UserVO userVO, @Parameter(hidden = true) @PageableDefault(value = 20) Pageable pageable) {
+            @Parameter(hidden = true) @CurrentUser UserVO userVO,
+            @Parameter(hidden = true) @PageableDefault(value = 20) Pageable pageable) {
         return notificationService.getAllNotificationsForUser(userVO.getId(), pageable);
     }
 }

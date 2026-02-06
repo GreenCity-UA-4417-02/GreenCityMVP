@@ -3,7 +3,6 @@ package greencity.service;
 import greencity.client.RestClient;
 import greencity.dto.PageableDto;
 import greencity.dto.notification.NotificationResponseDto;
-import greencity.dto.user.UserVO;
 import greencity.entity.Notification;
 import greencity.mapping.NotificationDtoResponseMapper;
 import greencity.repository.NotificationRepo;
@@ -12,9 +11,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -25,29 +26,29 @@ public class NotificationServiceImpl implements NotificationService {
     private final RestClient restClient;
 
     public PageableDto<NotificationResponseDto> getAllNotificationsForUser(Long userId, Pageable page) {
-        Page<Notification> notifications = notificationRepo.findAllByRecipientUserIdOrderByCreatedAtDesc(userId, page);
-        Map<Long, String> actorNames = new HashMap<>();
+        Page<Notification> notifications = notificationRepo
+                .findAllByRecipientUserIdOrderByCreatedAtDesc(userId, page);
 
-        for (Notification notification : notifications.getContent()) {
-            Long actorId = notification.getActorUserId();
-
-            if (!actorNames.containsKey(actorId)) {
-                String actorName;
-                try {
-                    UserVO actor = restClient.findById(actorId);
-                    actorName = actor.getName();
-                } catch (Exception e) {
-                    actorName = "Unknown user";
-                }
-                actorNames.put(actorId, actorName);
-            }
+        if (notifications.isEmpty()) {
+            return new PageableDto<>(Collections.emptyList(), 0, 0, 0);
         }
+
+        Set<Long> actorIds = notifications.getContent()
+                .stream()
+                .map(Notification::getActorUserId)
+                .collect(Collectors.toSet());
+
+        final Map<Long, String> actorNames = getActorNamesSafety(actorIds);
+
         List<NotificationResponseDto> responseDtoList = notifications
                 .getContent()
                 .stream()
                 .map(notification ->
-                        notificationDtoResponseMapper.convert(notification, actorNames.get(notification.getActorUserId())
-                        )
+                        notificationDtoResponseMapper
+                                .convert(notification,
+                                        actorNames.getOrDefault(
+                                                notification.getActorUserId(), "Unknown user")
+                                )
                 )
                 .toList();
 
@@ -56,5 +57,14 @@ public class NotificationServiceImpl implements NotificationService {
                 notifications.getTotalElements(),
                 notifications.getNumber(),
                 notifications.getTotalPages());
+    }
+
+    private Map<Long, String> getActorNamesSafety(Set<Long> actorIds) {
+
+        try {
+            return restClient.findUserNamesByUserIds(actorIds);
+        } catch (Exception e) {
+            return Collections.emptyMap();
+        }
     }
 }
