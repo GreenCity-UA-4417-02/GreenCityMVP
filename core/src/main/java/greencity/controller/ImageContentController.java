@@ -12,6 +12,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/events/images/content")
 @RequiredArgsConstructor
@@ -30,8 +32,8 @@ public class ImageContentController {
             @ApiResponse(responseCode = "404", description = "Image not found")
     })
     public ResponseEntity<byte[]> getImage(
-            @Parameter(description = "Image id", required = true, example = "10")
-            @PathVariable Long id) {
+            @Parameter(description = "Image id", required = true, example = "550e8400-e29b-41d4-a716-446655440000")
+            @PathVariable UUID id) {
         EventImageContentDto imageDto = imageService.getImageContent(id);
         return ResponseEntity.ok().contentType(MediaType.parseMediaType(imageDto.contentType())).body(imageDto.imageData());
     }

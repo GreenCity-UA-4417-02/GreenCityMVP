@@ -8,12 +8,12 @@ import greencity.exception.exceptions.NotSavedException;
 import greencity.repository.EventImageContentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -55,7 +55,7 @@ public class BlobImageServiceImpl implements ImageService {
         if (imageUrl != null && imageUrl.contains(BASE_URL)) {
             try {
                 String idStr = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
-                Long id = Long.valueOf(idStr);
+                UUID id = UUID.fromString(idStr);
 
                 eventImageContentRepository.deleteById(id);
             } catch (Exception e) {
@@ -66,7 +66,7 @@ public class BlobImageServiceImpl implements ImageService {
 
     @Override
     @Transactional(readOnly = true)
-    public EventImageContentDto getImageContent(Long id) {
+    public EventImageContentDto getImageContent(UUID id) {
         EventImageContent content = eventImageContentRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_IMAGE_CONTENT_NOT_FOUND + id));
 
