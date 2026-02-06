@@ -40,7 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @MockitoSettings(strictness = Strictness.LENIENT)
 class NotificationControllerTest {
 
-    private static final String HABIT_CONTROLLER_LINK = "/notifications";
+    private static final String NOTIFICATIONS_CONTROLLER_LINK = "/notifications";
 
     private final Principal principal = getPrincipal();
     private MockMvc mockMvc;
@@ -81,7 +81,7 @@ class NotificationControllerTest {
         when(userService.findByEmail("test@gmail.com")).thenReturn(userVO);
         when(notificationService.getAllNotificationsForUser(eq(userVO.getId()), any(Pageable.class))).thenReturn(pageableDto);
 
-        mockMvc.perform(get(HABIT_CONTROLLER_LINK)
+        mockMvc.perform(get(NOTIFICATIONS_CONTROLLER_LINK)
                         .principal(principal)
                         .param("page", "0")
                         .param("size", "20"))
@@ -103,7 +103,7 @@ class NotificationControllerTest {
         when(userService.findByEmail("test@gmail.com")).thenReturn(userVO);
         when(notificationService.getAllNotificationsForUser(any(), any())).thenReturn(pageableDto);
 
-        mockMvc.perform(get(HABIT_CONTROLLER_LINK)
+        mockMvc.perform(get(NOTIFICATIONS_CONTROLLER_LINK)
                         .principal(principal)
                         .param("page", "0")
                         .param("size", "20"))
