@@ -1,7 +1,6 @@
-package greencity.service.impl;
+package greencity.service;
 
 import greencity.dto.event.EventImageContentDto;
-import greencity.service.ImageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,10 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
-import software.amazon.awssdk.services.s3.model.GetUrlRequest;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
-import software.amazon.awssdk.services.s3.model.S3Exception;
+import software.amazon.awssdk.services.s3.model.*;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -25,7 +21,7 @@ import java.util.UUID;
 public class AwsImageServiceImpl implements ImageService {
     private final S3Client s3Client;
 
-    @Value("${aws.s3.bucket}")
+    @Value("${aws.s3.bucketName}")
     private String bucketName;
 
     @Override
@@ -41,6 +37,7 @@ public class AwsImageServiceImpl implements ImageService {
                     .bucket(bucketName)
                     .key(fileName)
                     .contentType(image.getContentType())
+                    .acl(ObjectCannedACL.PUBLIC_READ)
                     .build();
 
             s3Client.putObject(putOb, RequestBody.fromInputStream(
@@ -81,10 +78,5 @@ public class AwsImageServiceImpl implements ImageService {
         } catch (Exception e) {
             log.warn("Failed to delete file from S3: {}", imageUrl, e);
         }
-    }
-
-    @Override
-    public EventImageContentDto getImageContent(UUID id) {
-        throw new UnsupportedOperationException("AWS strategy does not support internal content retrieval. Use direct S3 URL.");
     }
 }

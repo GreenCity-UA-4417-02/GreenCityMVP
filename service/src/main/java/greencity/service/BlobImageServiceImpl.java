@@ -20,7 +20,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @ConditionalOnProperty(name = "greencity.images.strategy", havingValue = "database", matchIfMissing = true)
-public class BlobImageServiceImpl implements ImageService {
+public class BlobImageServiceImpl implements ImageService, ImageContentRetriever {
     private final EventImageContentRepository eventImageContentRepository;
     private static final String BASE_URL = "/events/images/content/";
 
