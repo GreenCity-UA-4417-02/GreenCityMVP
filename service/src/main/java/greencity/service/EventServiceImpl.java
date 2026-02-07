@@ -78,17 +78,20 @@ public class EventServiceImpl implements EventService {
             EventImageContentDto dto = imageService.upload(file);
             boolean isMain = (i == 0);
 
-            EventImageContent content = eventImageContentRepository.getReferenceById(dto.id());
-
             EventImages imageEntity = EventImages.builder()
                     .link(dto.link())
                     .event(event)
                     .isMain(isMain)
-                    .content(content)
                     .build();
 
+            if (dto.id() != null) {
+                EventImageContent content = eventImageContentRepository.getReferenceById(dto.id());
+                imageEntity.setContent(content);
+            }
 
-            if (isMain) event.setTitleImage(dto.link());
+            if (isMain) {
+                event.setTitleImage(dto.link());
+            }
 
             eventImages.add(imageEntity);
         }

@@ -23,7 +23,7 @@
         <google.maps.version>2.2.0</google.maps.version>
         <slf4.version>2.0.12</slf4.version>
         <apache.http.client.version>4.5.14</apache.http.client.version>
-        <aws.sdk.version>2.25.15</aws.sdk.version>
+        <aws.sdk.version>2.41.15</aws.sdk.version>
     </properties>
 
     <dependencies>
