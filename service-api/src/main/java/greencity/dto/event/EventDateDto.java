@@ -1,6 +1,7 @@
 package greencity.dto.event;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import greencity.annotations.FutureOrPresentDate;
 import greencity.annotations.ValidEventTime;
 import greencity.annotations.ValidEventTypeConsistency;
@@ -34,6 +35,7 @@ public record EventDateDto(
         @URL(message = "Invalid URL format for online link")
         String onlineLink
 ) {
+    @JsonIgnore
     @AssertTrue(message = "End time must be after start time")
     public boolean isValidTimeRange() {
         if (startTime == null || endTime == null) return true;
