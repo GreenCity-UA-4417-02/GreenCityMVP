@@ -177,5 +177,9 @@
     <include file="db/changelog/logs/ch-drop-news-subscribers-table-Bokalo.xml"/>
     <include file="db/changelog/logs/ch-drop-user-friends-table-Bokalo.xml"/>
     <include file="db/changelog/logs/ch-update-users-null-language-Kholod.xml"/>
+    <include file="db/changelog/logs/ch-create-events-tables-Huz.xml"/>
+    <include file="db/changelog/logs/ch-update-events-images-blob-Huz.xml"/>
+    <include file="db/changelog/logs/ch-update-event-images-content-table-Huz.xml"/>
+    <include file="db/changelog/logs/ch-change-event-images-id-to-uuid-Huz.xml"/>
 </databaseChangeLog>
 
