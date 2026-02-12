@@ -176,7 +176,10 @@
     <include file="db/changelog/logs/ch-drop-places-table-Bokalo.xml"/>
     <include file="db/changelog/logs/ch-drop-news-subscribers-table-Bokalo.xml"/>
     <include file="db/changelog/logs/ch-drop-user-friends-table-Bokalo.xml"/>
+    <include file="db/changelog/logs/ch-add-table-notifications-Zahychenko.xml"/>
     <include file="db/changelog/logs/ch-update-users-null-language-Kholod.xml"/>
+    <include file="db/changelog/logs/ch-add-index-notifications-recipient-created-at-Zahychenko.xml"/>
+
     <include file="db/changelog/logs/ch-create-events-tables-Huz.xml"/>
     <include file="db/changelog/logs/ch-update-events-images-blob-Huz.xml"/>
     <include file="db/changelog/logs/ch-update-event-images-content-table-Huz.xml"/>

@@ -10,6 +10,7 @@ public class RestTemplateLinks {
     public static final String ID = "?id=";
     public static final String USER_FIND_BY_ID = "/user/findById";
     public static final String USER_FIND_USER_FOR_MANAGEMENT = "/user/findUserForManagement";
+    public static final String USER_FIND_NAMES_BY_IDS = "/user/ids";
     public static final String PAGE = "?page=";
     public static final String SIZE = "&size=";
     public static final String QUERY = "&query=";
