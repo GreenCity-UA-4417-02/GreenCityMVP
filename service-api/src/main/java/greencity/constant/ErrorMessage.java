@@ -133,6 +133,10 @@ public final class ErrorMessage {
     public static final String FILTER_NOT_FOUND_BY_ID = "Filter not found";
     public static final String USER_HAS_NO_FRIEND_WITH_ID = "User has no friend with this id: ";
     public static final String INVALID_DURATION = "The duration for such habit is lower than previously set";
+    public static final String EVENT_INITIATIVE_TYPE_NOT_FOUND = "Initiative type not found with id: ";
+    public static final String EVENT_CATEGORY_NOT_FOUND = "Event category not found with id: ";
+    public static final String EVENT_ORGANIZER_NOT_FOUND = "Organizer not found with id: ";
+    public static final String EVENT_IMAGE_CONTENT_NOT_FOUND = "Image content not found with id: ";
 
     private ErrorMessage() {
     }
