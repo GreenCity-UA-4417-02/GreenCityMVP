@@ -22,13 +22,10 @@ import static org.powermock.api.mockito.PowerMockito.when;
 class LanguageValidatorTest {
     @Mock
     private ConstraintValidatorContext context;
-
     @Mock
     private LanguageService languageService;
-
     @InjectMocks
     private LanguageValidator languageValidator;
-
     private List<String> supportedLanguages;
 
     @BeforeEach
@@ -40,7 +37,7 @@ class LanguageValidatorTest {
     }
 
     @Test
-    void isValid_WithSupportedLanguage_ReturnsTrue(){
+    void isValid_WithSupportedLanguage_ReturnsTrue() {
         Locale locale = Locale.of("en");
 
         boolean result = languageValidator.isValid(locale, context);
@@ -48,7 +45,7 @@ class LanguageValidatorTest {
     }
 
     @Test
-    void isValid_WithUnsupportedLanguage_ReturnsFalse(){
+    void isValid_WithUnsupportedLanguage_ReturnsFalse() {
         Locale locale = Locale.of("fr");
 
         boolean result = languageValidator.isValid(locale, context);
@@ -57,8 +54,7 @@ class LanguageValidatorTest {
 
     @Test
     void isValid_WithNullLocale_ReturnsFalse() {
-        assertThrows(NullPointerException.class, () ->
-                languageValidator.isValid(null, context));
+        assertThrows(NullPointerException.class, () -> languageValidator.isValid(null, context));
     }
 
     @Test

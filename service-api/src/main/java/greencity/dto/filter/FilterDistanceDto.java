@@ -1,12 +1,15 @@
 package greencity.dto.filter;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Positive;
-import static greencity.constant.ServiceValidationConstants.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import static greencity.constant.ServiceValidationConstants.LAT_MAX_VALIDATION;
+import static greencity.constant.ServiceValidationConstants.LAT_MIN_VALIDATION;
+import static greencity.constant.ServiceValidationConstants.LNG_MAX_VALIDATION;
+import static greencity.constant.ServiceValidationConstants.LNG_MIN_VALIDATION;
 
 @Data
 @AllArgsConstructor

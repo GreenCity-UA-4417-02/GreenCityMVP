@@ -1,12 +1,12 @@
 package greencity.security.dto.ownsecurity;
 
 import greencity.constant.ServiceValidationConstants;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 
 @Data
 @NoArgsConstructor

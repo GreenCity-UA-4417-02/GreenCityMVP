@@ -6,17 +6,26 @@ import greencity.dto.event.EventDateDto;
 import greencity.dto.event.EventImageContentDto;
 import greencity.dto.event.EventResponseDto;
 import greencity.entity.User;
-import greencity.entity.event.*;
+import greencity.entity.event.Address;
+import greencity.entity.event.Event;
+import greencity.entity.event.EventCategory;
+import greencity.entity.event.EventDateLocation;
+import greencity.entity.event.EventImageContent;
+import greencity.entity.event.EventImages;
+import greencity.entity.event.InitiativeType;
 import greencity.enums.EventType;
 import greencity.exception.exceptions.NotFoundException;
-import greencity.repository.*;
+import greencity.repository.EventCategoryRepository;
+import greencity.repository.EventImageContentRepository;
+import greencity.repository.EventRepository;
+import greencity.repository.InitiativeTypeRepository;
+import greencity.repository.UserRepo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,13 +48,15 @@ public class EventServiceImpl implements EventService {
         log.info("Creating event with title: '{}' by organizerId: {}", requestDto.title(), organizerId);
 
         User organizer = userRepository.findById(organizerId)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_ORGANIZER_NOT_FOUND + organizerId));
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_ORGANIZER_NOT_FOUND + organizerId));
 
         InitiativeType initiativeType = initiativeTypeRepository.findById(requestDto.initiativeTypeId())
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_INITIATIVE_TYPE_NOT_FOUND + requestDto.initiativeTypeId()));
+            .orElseThrow(() -> new NotFoundException(
+                ErrorMessage.EVENT_INITIATIVE_TYPE_NOT_FOUND + requestDto.initiativeTypeId()));
 
         EventCategory eventCategory = eventCategoryRepository.findById(requestDto.eventCategoryId())
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_CATEGORY_NOT_FOUND + requestDto.eventCategoryId()));
+            .orElseThrow(
+                () -> new NotFoundException(ErrorMessage.EVENT_CATEGORY_NOT_FOUND + requestDto.eventCategoryId()));
 
         Event event = modelMapper.map(requestDto, Event.class);
         event.setOrganizer(organizer);
@@ -69,20 +80,24 @@ public class EventServiceImpl implements EventService {
 
     private List<EventImages> processImages(MultipartFile[] files, Event event) {
         List<EventImages> eventImages = new ArrayList<>();
-        if (files == null || files.length == 0) return eventImages;
+        if (files == null || files.length == 0) {
+            return eventImages;
+        }
 
         for (int i = 0; i < files.length; i++) {
             MultipartFile file = files[i];
-            if (file == null || file.isEmpty()) continue;
+            if (file == null || file.isEmpty()) {
+                continue;
+            }
 
             EventImageContentDto dto = imageService.upload(file);
             boolean isMain = (i == 0);
 
             EventImages imageEntity = EventImages.builder()
-                    .link(dto.link())
-                    .event(event)
-                    .isMain(isMain)
-                    .build();
+                .link(dto.link())
+                .event(event)
+                .isMain(isMain)
+                .build();
 
             if (dto.id() != null) {
                 EventImageContent content = eventImageContentRepository.getReferenceById(dto.id());
@@ -104,22 +119,22 @@ public class EventServiceImpl implements EventService {
 
         for (EventDateDto dateDto : requestDto.dates()) {
             EventDateLocation eventDate = EventDateLocation.builder()
-                    .date(dateDto.date())
-                    .startTime(dateDto.startTime())
-                    .endTime(dateDto.endTime())
-                    .isAllDay(dateDto.isAllDay())
-                    .event(event)
-                    .build();
+                .date(dateDto.date())
+                .startTime(dateDto.startTime())
+                .endTime(dateDto.endTime())
+                .isAllDay(dateDto.isAllDay())
+                .event(event)
+                .build();
 
             if (dateDto.address() != null) {
                 Address address = Address.builder()
-                        .latitude(dateDto.address().latitude())
-                        .longitude(dateDto.address().longitude())
-                        .streetUk(dateDto.address().streetUk())
-                        .cityUk(dateDto.address().cityUk())
-                        .countryUk(dateDto.address().countryUk())
-                        .formattedAddressUk(dateDto.address().formattedAddressUk())
-                        .build();
+                    .latitude(dateDto.address().latitude())
+                    .longitude(dateDto.address().longitude())
+                    .streetUk(dateDto.address().streetUk())
+                    .cityUk(dateDto.address().cityUk())
+                    .countryUk(dateDto.address().countryUk())
+                    .formattedAddressUk(dateDto.address().formattedAddressUk())
+                    .build();
                 eventDate.setAddress(address);
             }
 

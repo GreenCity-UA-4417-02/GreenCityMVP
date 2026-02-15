@@ -31,13 +31,13 @@ class BlobImageServiceImplTest {
     @Test
     void upload_ValidImage_ReturnsDto() throws IOException {
         MockMultipartFile file = new MockMultipartFile(
-                "image", "test.jpg", "image/jpeg", "test data".getBytes());
+            "image", "test.jpg", "image/jpeg", "test data".getBytes());
         UUID id = UUID.randomUUID();
         EventImageContent content = EventImageContent.builder()
-                .id(id)
-                .imageData(file.getBytes())
-                .contentType(file.getContentType())
-                .build();
+            .id(id)
+            .imageData(file.getBytes())
+            .contentType(file.getContentType())
+            .build();
 
         when(eventImageContentRepository.save(any(EventImageContent.class))).thenReturn(content);
 
@@ -77,9 +77,9 @@ class BlobImageServiceImplTest {
         UUID id = UUID.randomUUID();
         byte[] data = "data".getBytes();
         EventImageContent content = EventImageContent.builder()
-                .imageData(data)
-                .contentType("image/png")
-                .build();
+            .imageData(data)
+            .contentType("image/png")
+            .build();
 
         when(eventImageContentRepository.findById(id)).thenReturn(Optional.of(content));
 

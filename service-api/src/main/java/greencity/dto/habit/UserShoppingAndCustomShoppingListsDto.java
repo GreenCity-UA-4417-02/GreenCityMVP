@@ -2,11 +2,11 @@ package greencity.dto.habit;
 
 import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
 import greencity.dto.user.UserShoppingListItemResponseDto;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import jakarta.validation.Valid;
 import java.util.List;
 
 @Data

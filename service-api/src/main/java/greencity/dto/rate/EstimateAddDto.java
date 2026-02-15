@@ -1,11 +1,11 @@
 package greencity.dto.rate;
 
 import greencity.constant.ServiceValidationConstants;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
 
 /**
  * The data transfer object of the Estimate.

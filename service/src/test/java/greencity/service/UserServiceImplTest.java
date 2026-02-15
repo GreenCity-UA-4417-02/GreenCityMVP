@@ -29,7 +29,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.time.Month;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -149,9 +148,9 @@ class UserServiceImplTest {
     @Test
     void testFindNotDeactivatedByEmail() {
         when(userRepo.findNotDeactivatedByEmail(TEST_EMAIL))
-            .thenReturn(Optional.of(TEST_USER));
+                .thenReturn(Optional.of(TEST_USER));
         when(modelMapper.map(Optional.of(TEST_USER), UserVO.class))
-            .thenReturn(TEST_USER_VO);
+                .thenReturn(TEST_USER_VO);
 
         Optional<UserVO> actual = userService.findNotDeactivatedByEmail(TEST_EMAIL);
 
@@ -172,7 +171,7 @@ class UserServiceImplTest {
         when(userRepo.findIdByEmail(TEST_EMAIL)).thenReturn(Optional.empty());
 
         assertThrows(WrongEmailException.class,
-            () -> userService.findIdByEmail(TEST_EMAIL));
+                () -> userService.findIdByEmail(TEST_EMAIL));
     }
 
     @Test
@@ -212,7 +211,7 @@ class UserServiceImplTest {
         when(modelMapper.map(TEST_USER, UserVO.class)).thenReturn(TEST_USER_VO);
 
         assertThrows(BadUpdateRequestException.class,
-            () -> userService.updateStatus(1L, CREATED, TEST_EMAIL));
+                () -> userService.updateStatus(1L, CREATED, TEST_EMAIL));
     }
 
     @Test
@@ -223,7 +222,7 @@ class UserServiceImplTest {
         when(modelMapper.map(TEST_USER, UserVO.class)).thenReturn(TEST_USER_VO);
 
         assertThrows(LowRoleLevelException.class,
-            () -> userService.updateStatus(2L, CREATED, TEST_EMAIL));
+                () -> userService.updateStatus(2L, CREATED, TEST_EMAIL));
     }
 
     @Test

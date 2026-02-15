@@ -4,6 +4,10 @@ import greencity.client.RestClient;
 import greencity.dto.user.UserVO;
 import greencity.security.jwt.JwtTool;
 import io.jsonwebtoken.ExpiredJwtException;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,10 +20,6 @@ import org.mockito.quality.Strictness;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -31,9 +31,6 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class AccessTokenAuthenticationFilterTest {
-    private PrintStream systemOut;
-    private ByteArrayOutputStream systemOutContent;
-
     @Mock
     HttpServletRequest request;
     @Mock
@@ -46,7 +43,8 @@ class AccessTokenAuthenticationFilterTest {
     AuthenticationManager authenticationManager;
     @Mock
     RestClient restClient;
-
+    private PrintStream systemOut;
+    private ByteArrayOutputStream systemOutContent;
     @InjectMocks
     private AccessTokenAuthenticationFilter authenticationFilter;
 
@@ -66,9 +64,9 @@ class AccessTokenAuthenticationFilterTest {
     void doFilterInternalTest() throws IOException, ServletException {
         when(jwtTool.getTokenFromHttpServletRequest(request)).thenReturn("SuperSecretAccessToken");
         when(authenticationManager.authenticate(any()))
-            .thenReturn(new UsernamePasswordAuthenticationToken("test@mail.com", null));
+                .thenReturn(new UsernamePasswordAuthenticationToken("test@mail.com", null));
         when(restClient.findNotDeactivatedByEmail("test@mail.com"))
-            .thenReturn(Optional.of(UserVO.builder().id(1L).build()));
+                .thenReturn(Optional.of(UserVO.builder().id(1L).build()));
         doNothing().when(chain).doFilter(request, response);
 
         authenticationFilter.doFilterInternal(request, response, chain);
@@ -82,7 +80,7 @@ class AccessTokenAuthenticationFilterTest {
         when(jwtTool.getTokenFromHttpServletRequest(request)).thenReturn(token);
         when(authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(token, null)))
-                .thenThrow(ExpiredJwtException.class);
+            .thenThrow(ExpiredJwtException.class);
         authenticationFilter.doFilterInternal(request, response, chain);
         verify(jwtTool).getTokenFromHttpServletRequest(request);
         verify(authenticationManager).authenticate(any());

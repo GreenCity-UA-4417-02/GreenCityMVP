@@ -7,6 +7,7 @@ import greencity.dto.tag.TagViewDto;
 import greencity.entity.EcoNews;
 import greencity.entity.RatingStatistics_;
 import greencity.entity.Tag;
+import jakarta.persistence.criteria.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,7 +15,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import jakarta.persistence.criteria.*;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
@@ -27,6 +27,12 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class MySpecificationTest {
+    TagSpecification tagSpecification;
+    List<SearchCriteria> searchCriteriaList;
+    TagViewDto tagViewDto;
+    EcoNewsViewDto ecoNewsViewDto;
+    EcoNewsSpecification ecoNewsSpecification;
+    SearchCriteria searchCriteriaForAll;
     @Mock
     private Root<Tag> root;
     @Mock
@@ -39,12 +45,6 @@ class MySpecificationTest {
     private Path<Object> objectPath;
     @Mock
     private Expression<String> as;
-    TagSpecification tagSpecification;
-    List<SearchCriteria> searchCriteriaList;
-    TagViewDto tagViewDto;
-    EcoNewsViewDto ecoNewsViewDto;
-    EcoNewsSpecification ecoNewsSpecification;
-    SearchCriteria searchCriteriaForAll;
 
     @BeforeEach
     void init() {
@@ -82,7 +82,7 @@ class MySpecificationTest {
     void getNumericPredicate() {
         when(root.get(searchCriteriaForAll.getKey())).thenReturn(objectPath);
         when(criteriaBuilder.equal(objectPath, searchCriteriaForAll.getValue())).thenThrow(NumberFormatException.class)
-            .thenReturn(expected);
+                .thenReturn(expected);
         when(criteriaBuilder.disjunction()).thenReturn(expected);
         Predicate actual = tagSpecification.getNumericPredicate(root, criteriaBuilder, searchCriteriaForAll);
         assertEquals(expected, actual);

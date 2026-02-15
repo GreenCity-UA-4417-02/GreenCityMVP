@@ -1,8 +1,13 @@
 package greencity.dto.habitfact;
 
 import greencity.dto.user.HabitIdRequestDto;
-import lombok.*;
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import java.util.List;
 
 @EqualsAndHashCode

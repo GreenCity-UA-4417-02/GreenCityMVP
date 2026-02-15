@@ -15,6 +15,7 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.repository.EcoNewsCommentRepo;
 import greencity.repository.EcoNewsRepo;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,7 +30,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
-import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashSet;
@@ -46,6 +46,8 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class EcoNewsCommentServiceImplTest {
     @Mock
+    EcoNewsRepo ecoNewsRepo;
+    @Mock
     private EcoNewsCommentRepo ecoNewsCommentRepo;
     @Mock
     private EcoNewsService ecoNewsService;
@@ -55,8 +57,6 @@ class EcoNewsCommentServiceImplTest {
     private SimpMessagingTemplate messagingTemplate;
     @Mock
     private HttpServletRequest httpServletRequest;
-    @Mock
-    EcoNewsRepo ecoNewsRepo;
     @InjectMocks
     private EcoNewsCommentServiceImpl ecoNewsCommentService;
 
@@ -456,7 +456,7 @@ class EcoNewsCommentServiceImplTest {
 
         when(ecoNewsCommentRepo
             .findAllByParentCommentIsNullAndDeletedFalseAndEcoNewsIdOrderByCreatedDateDesc(pageRequest, 1L))
-                .thenReturn(page);
+            .thenReturn(page);
         when(modelMapper.map(ecoNewsComment, EcoNewsCommentDto.class)).thenReturn(ecoNewsCommentDto);
         when(ecoNewsCommentRepo.countByParentCommentId(ecoNewsCommentDto.getId())).thenReturn(10);
 
@@ -481,7 +481,7 @@ class EcoNewsCommentServiceImplTest {
 
         when(ecoNewsCommentRepo
             .findAllByParentCommentIdAndDeletedFalseOrderByCreatedDateDesc(pageRequest, 1L))
-                .thenReturn(page);
+            .thenReturn(page);
 
         when(modelMapper.map(ecoNewsComment, EcoNewsCommentDto.class)).thenReturn(ecoNewsCommentDto);
 

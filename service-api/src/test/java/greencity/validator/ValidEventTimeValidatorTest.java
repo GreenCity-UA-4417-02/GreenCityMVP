@@ -8,13 +8,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class ValidEventTimeValidatorTest {
@@ -34,11 +34,10 @@ class ValidEventTimeValidatorTest {
     @Test
     void isValid_TodayWithPastTime_ReturnsFalse() {
         EventDateDto dto = new EventDateDto(
-                LocalDate.now(),
-                LocalTime.now().minusHours(1),
-                LocalTime.now().plusHours(1),
-                false, null, null
-        );
+            LocalDate.now(),
+            LocalTime.now().minusHours(1),
+            LocalTime.now().plusHours(1),
+            false, null, null);
 
         assertFalse(validator.isValid(dto, context));
         verify(context).buildConstraintViolationWithTemplate(anyString());

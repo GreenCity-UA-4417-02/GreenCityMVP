@@ -2,12 +2,12 @@ package greencity.dto.user;
 
 import greencity.constant.ServiceValidationConstants;
 import greencity.enums.EmailNotification;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Setter

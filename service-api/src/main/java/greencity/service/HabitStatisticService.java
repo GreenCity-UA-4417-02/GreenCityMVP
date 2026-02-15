@@ -1,7 +1,11 @@
 package greencity.service;
 
 import greencity.dto.habit.HabitAssignVO;
-import greencity.dto.habitstatistic.*;
+import greencity.dto.habitstatistic.AddHabitStatisticDto;
+import greencity.dto.habitstatistic.GetHabitStatisticDto;
+import greencity.dto.habitstatistic.HabitItemsAmountStatisticDto;
+import greencity.dto.habitstatistic.HabitStatisticDto;
+import greencity.dto.habitstatistic.UpdateHabitStatisticDto;
 import java.util.List;
 
 public interface HabitStatisticService {

@@ -42,28 +42,21 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class EventControllerTest {
+    private final ObjectMapper objectMapper = new ObjectMapper()
+        .registerModule(new JavaTimeModule())
+        .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+    private final Principal principal = ModelUtils.getPrincipal();
     private MockMvc mockMvc;
-
     @Mock
     private EventService eventService;
-
     @Mock
     private UserService userService;
-
     @Mock
     private ModelMapper modelMapper;
-
     @Mock
     private ErrorAttributes errorAttributes;
-
     @InjectMocks
     private EventController eventController;
-
-    private final ObjectMapper objectMapper = new ObjectMapper()
-            .registerModule(new JavaTimeModule())
-            .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-
-    private final Principal principal = ModelUtils.getPrincipal();
 
     @BeforeEach
     void setup() {
@@ -96,10 +89,10 @@ class EventControllerTest {
         when(eventService.createEvent(any(), any(), anyLong())).thenReturn(responseDto);
 
         mockMvc.perform(multipart("/events")
-                        .file(requestPart)
-                        .file(imagePart)
-                        .principal(principal))
-                .andExpect(status().isCreated());
+            .file(requestPart)
+            .file(imagePart)
+            .principal(principal))
+            .andExpect(status().isCreated());
 
         verify(eventService).createEvent(eq(requestDto), any(), eq(userVO.getId()));
     }
@@ -107,16 +100,15 @@ class EventControllerTest {
     @Test
     void createEvent_BadRequest_InvalidDto() throws Exception {
         CreateEventRequestDto invalidDto = new CreateEventRequestDto(
-                "", null, "short", null, null, null, null, true
-        );
+            "", null, "short", null, null, null, null, true);
 
         String json = objectMapper.writeValueAsString(invalidDto);
         MockMultipartFile requestPart = new MockMultipartFile("requestDto", "", "application/json", json.getBytes());
 
         mockMvc.perform(multipart("/events")
-                        .file(requestPart)
-                        .principal(principal))
-                .andExpect(status().isBadRequest());
+            .file(requestPart)
+            .principal(principal))
+            .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -127,11 +119,11 @@ class EventControllerTest {
 
         when(userService.findByEmail(anyString())).thenReturn(ModelUtils.getUserVO());
         when(eventService.createEvent(any(), any(), anyLong()))
-                .thenThrow(new NotFoundException("Organizer not found"));
+            .thenThrow(new NotFoundException("Organizer not found"));
 
         mockMvc.perform(multipart("/events")
-                        .file(requestPart)
-                        .principal(principal))
-                .andExpect(status().isNotFound());
+            .file(requestPart)
+            .principal(principal))
+            .andExpect(status().isNotFound());
     }
 }

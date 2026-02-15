@@ -29,23 +29,20 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class ImageContentControllerTest {
+    private final ObjectMapper objectMapper = new ObjectMapper();
     private MockMvc mockMvc;
-
     @Mock
     private ImageContentRetriever imageService;
-
     @Mock
     private ErrorAttributes errorAttributes;
-
     @InjectMocks
     private ImageContentController imageContentController;
-
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
     void setup() {
@@ -70,9 +67,9 @@ class ImageContentControllerTest {
         when(imageService.getImageContent(id)).thenReturn(dto);
 
         mockMvc.perform(get("/events/images/content/{id}", id))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.IMAGE_PNG))
-                .andExpect(content().bytes(dto.imageData()));
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.IMAGE_PNG))
+            .andExpect(content().bytes(dto.imageData()));
 
         verify(imageService).getImageContent(id);
     }
@@ -83,12 +80,12 @@ class ImageContentControllerTest {
         when(imageService.getImageContent(id)).thenThrow(new NotFoundException("Image not found"));
 
         mockMvc.perform(get("/events/images/content/{id}", id))
-                .andExpect(status().isNotFound());
+            .andExpect(status().isNotFound());
     }
 
     @Test
     void getImage_InvalidUuidFormat() throws Exception {
         mockMvc.perform(get("/events/images/content/{id}", "invalid-uuid"))
-                .andExpect(status().isBadRequest());
+            .andExpect(status().isBadRequest());
     }
 }

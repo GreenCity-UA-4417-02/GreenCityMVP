@@ -84,8 +84,8 @@ class CategoryServiceImplTest {
     void saveDtoWhenFindByNameTrueTest() {
         when(categoryRepo.findByName(any())).thenReturn(category);
         Assertions
-            .assertThrows(BadCategoryRequestException.class,
-                () -> categoryService.save(categoryDto));
+                .assertThrows(BadCategoryRequestException.class,
+                        () -> categoryService.save(categoryDto));
     }
 
     @Test
@@ -101,8 +101,8 @@ class CategoryServiceImplTest {
     void findByNameWhenCategoryNullTest() {
         when(categoryRepo.findByName(anyString())).thenReturn(null);
         Assertions
-            .assertThrows(NotFoundException.class,
-                () -> categoryService.findByName("test"));
+                .assertThrows(NotFoundException.class,
+                        () -> categoryService.findByName("test"));
     }
 
     @Test

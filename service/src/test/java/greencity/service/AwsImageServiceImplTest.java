@@ -39,7 +39,7 @@ class AwsImageServiceImplTest {
     @Test
     void upload_ValidImage_ReturnsUrl() throws MalformedURLException {
         MockMultipartFile file = new MockMultipartFile(
-                "image", "test.png", "image/png", "test content".getBytes());
+            "image", "test.png", "image/png", "test content".getBytes());
 
         S3Utilities s3Utilities = mock(S3Utilities.class);
         URL mockUrl = new URL("https://test-bucket.s3.amazonaws.com/unique-id.png");
@@ -59,7 +59,7 @@ class AwsImageServiceImplTest {
         MockMultipartFile file = new MockMultipartFile("image", "test.png", "image/png", "data".getBytes());
 
         when(s3Client.putObject(any(PutObjectRequest.class), any(RequestBody.class)))
-                .thenThrow(S3Exception.builder().message("S3 Error").build());
+            .thenThrow(S3Exception.builder().message("S3 Error").build());
 
         assertThrows(RuntimeException.class, () -> awsImageService.upload(file));
     }

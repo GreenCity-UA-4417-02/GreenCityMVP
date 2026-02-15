@@ -47,7 +47,6 @@ public interface HabitService {
      * @param pageable     {@link Pageable}
      * @param tags         {@link List} of {@link String} tags
      * @param languageCode language code {@link String}
-     *
      * @return {@link PageableDto} of {@link HabitDto}.
      * @author Markiyan Derevetskyi
      */
@@ -62,7 +61,6 @@ public interface HabitService {
      * @param isCustomHabit {@link Boolean} value.
      * @param complexities  {@link List} of {@link Integer}.
      * @param languageCode  language code {@link String}.
-     *
      * @return {@link PageableDto} of {@link HabitDto}.
      * @author Lilia Mokhnatska
      */
