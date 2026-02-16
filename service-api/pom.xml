@@ -9,10 +9,9 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <groupId>greencity</groupId>
     <artifactId>service-api</artifactId>
-    <version>1.0-SNAPSHOT</version>
     <name>service-api</name>
+
     <properties>
         <swagger.version>3.0.0</swagger.version>
         <io.jsonwebtoken.version>0.12.5</io.jsonwebtoken.version>

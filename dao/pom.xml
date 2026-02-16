@@ -9,10 +9,9 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <groupId>greencity</groupId>
     <artifactId>dao</artifactId>
-    <version>1.0-SNAPSHOT</version>
     <name>dao</name>
+
     <properties>
         <junit-jupiter.version>5.10.2</junit-jupiter.version>
         <liquibase.version>4.25.1</liquibase.version>
@@ -22,7 +21,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>greencity</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>service-api</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
