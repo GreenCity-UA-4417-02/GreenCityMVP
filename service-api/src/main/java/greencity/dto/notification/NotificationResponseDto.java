@@ -1,6 +1,7 @@
 package greencity.dto.notification;
 
 import greencity.enums.NotificationAction;
+import greencity.enums.NotificationOrigin;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,4 +17,5 @@ public class NotificationResponseDto {
     private String objectTitle;
     private LocalDateTime createdAt;
     private boolean read;
+    private NotificationOrigin origin;
 }

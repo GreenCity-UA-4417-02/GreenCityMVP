@@ -4,6 +4,7 @@ import greencity.client.RestClient;
 import greencity.dto.PageableDto;
 import greencity.dto.notification.NotificationResponseDto;
 import greencity.entity.Notification;
+import greencity.enums.NotificationOrigin;
 import greencity.mapping.NotificationDtoResponseMapper;
 import greencity.repository.NotificationRepo;
 import lombok.RequiredArgsConstructor;
@@ -25,9 +26,14 @@ public class NotificationServiceImpl implements NotificationService {
     private final NotificationDtoResponseMapper notificationDtoResponseMapper;
     private final RestClient restClient;
 
-    public PageableDto<NotificationResponseDto> getAllNotificationsForUser(Long userId, Pageable page) {
-        Page<Notification> notifications = notificationRepo
-                .findAllByRecipientUserIdOrderByCreatedAtDesc(userId, page);
+    @Override
+    public PageableDto<NotificationResponseDto> getAllNotificationsForUser(Long userId, NotificationOrigin origin, Pageable page) {
+        Page<Notification> notifications;
+        if (origin != null) {
+            notifications = notificationRepo.findAllByRecipientUserIdAndOriginOrderByCreatedAtDesc(userId, origin, page);
+        } else {
+            notifications = notificationRepo.findAllByRecipientUserIdOrderByCreatedAtDesc(userId, page);
+        }
 
         if (notifications.isEmpty()) {
             return new PageableDto<>(Collections.emptyList(), 0, 0, 0);

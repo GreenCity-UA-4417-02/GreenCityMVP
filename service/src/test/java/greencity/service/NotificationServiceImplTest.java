@@ -4,6 +4,7 @@ import greencity.client.RestClient;
 import greencity.dto.PageableDto;
 import greencity.dto.notification.NotificationResponseDto;
 import greencity.entity.Notification;
+import greencity.enums.NotificationOrigin;
 import greencity.mapping.NotificationDtoResponseMapper;
 import greencity.repository.NotificationRepo;
 import org.junit.jupiter.api.Test;
@@ -23,6 +24,9 @@ import java.util.Set;
 import static greencity.enums.NotificationAction.LIKED;
 import static java.time.LocalDateTime.now;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -60,7 +64,7 @@ class NotificationServiceImplTest {
         when(notificationDtoResponseMapper.convert(notification, actorName)).thenReturn(dto);
 
         PageableDto<NotificationResponseDto> allNotification = notificationServiceImpl
-                .getAllNotificationsForUser(userId, pageable);
+                .getAllNotificationsForUser(userId, null, pageable);
 
         assertEquals(1, allNotification.getPage().size());
         assertEquals("John", allNotification.getPage().getFirst().getActorName());
@@ -81,7 +85,7 @@ class NotificationServiceImplTest {
                 .thenReturn(createNotificationResponseDto("Unknown user"));
 
         PageableDto<NotificationResponseDto> allNotification = notificationServiceImpl
-                .getAllNotificationsForUser(userId, pageable);
+                .getAllNotificationsForUser(userId, null, pageable);
 
         assertEquals("Unknown user", allNotification.getPage().getFirst().getActorName());
         assertEquals(1, allNotification.getPage().size());
@@ -105,5 +109,27 @@ class NotificationServiceImplTest {
                 .createdAt(now())
                 .read(false)
                 .build();
+    }
+
+    @Test
+    void getAllNotificationsForUser_withOrigin_ShouldFilterByOrigin() {
+        Long userId = 1L;
+        Pageable pageable = PageRequest.of(0, 20);
+        NotificationOrigin origin = NotificationOrigin.GREEN_CITY;
+        Notification notification = createNotification(userId, 2L);
+        notification.setOrigin(origin);
+
+        Page<Notification> page = new PageImpl<>(Collections.singletonList(notification));
+
+        when(notificationRepo.findAllByRecipientUserIdAndOriginOrderByCreatedAtDesc(userId, origin, pageable))
+                .thenReturn(page);
+        when(restClient.findUserNamesByUserIds(anySet())).thenReturn(Collections.emptyMap());
+        when(notificationDtoResponseMapper.convert(any(Notification.class), anyString()))
+                .thenReturn(NotificationResponseDto.builder().origin(origin).build());
+
+        var result = notificationServiceImpl.getAllNotificationsForUser(userId, origin, pageable);
+
+        assertEquals(1, result.getPage().size());
+        verify(notificationRepo).findAllByRecipientUserIdAndOriginOrderByCreatedAtDesc(userId, origin, pageable);
     }
 }

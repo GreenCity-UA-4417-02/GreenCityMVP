@@ -1,6 +1,7 @@
 package greencity.entity;
 
 import greencity.enums.NotificationAction;
+import greencity.enums.NotificationOrigin;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -46,4 +47,9 @@ public class Notification {
     private LocalDateTime createdAt;
 
     private LocalDateTime readAt;
+
+    @Column(name = "origin", nullable = false, columnDefinition = "varchar(255) default 'GREEN_CITY'")
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private NotificationOrigin origin = NotificationOrigin.GREEN_CITY;
 }
