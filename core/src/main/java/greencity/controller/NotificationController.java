@@ -7,6 +7,7 @@ import greencity.dto.notification.NotificationResponseDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.NotificationOrigin;
 import greencity.service.NotificationService;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -27,6 +28,7 @@ public class NotificationController {
     private final NotificationService notificationService;
 
     /**
+     * @param origin   optional {@link NotificationOrigin} to filter notifications by source system; null returns all.
      * @param pageable {@link Pageable} instance.
      * @return Pageable of {@link NotificationResponseDto}.
      */
@@ -37,6 +39,8 @@ public class NotificationController {
     @GetMapping
     public PageableDto<NotificationResponseDto> getAllNotificationsForUser(
             @Parameter(hidden = true) @CurrentUser UserVO userVO,
+            @Parameter(description = "Filter by notification origin. Accepted values: GREEN_CITY, PICKUP (case-sensitive).",
+                    schema = @Schema(implementation = NotificationOrigin.class))
             @RequestParam(required = false) NotificationOrigin origin,
             @Parameter(hidden = true) @PageableDefault(value = 20) Pageable pageable) {
         return notificationService.getAllNotificationsForUser(userVO.getId(), origin, pageable);

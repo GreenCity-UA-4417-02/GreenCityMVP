@@ -24,7 +24,6 @@ import java.util.Set;
 import static greencity.enums.NotificationAction.LIKED;
 import static java.time.LocalDateTime.now;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -130,6 +129,7 @@ class NotificationServiceImplTest {
         var result = notificationServiceImpl.getAllNotificationsForUser(userId, origin, pageable);
 
         assertEquals(1, result.getPage().size());
+        assertEquals(origin, result.getPage().getFirst().getOrigin());
         verify(notificationRepo).findAllByRecipientUserIdAndOriginOrderByCreatedAtDesc(userId, origin, pageable);
     }
 }

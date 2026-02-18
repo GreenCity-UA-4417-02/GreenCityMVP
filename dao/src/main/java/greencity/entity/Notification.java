@@ -12,13 +12,16 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @EqualsAndHashCode(of = "id")
-@NoArgsConstructor
+// @NoArgsConstructor removed to use manual default constructor
 @AllArgsConstructor
 @Builder
 @Entity
 @Table(name = "notifications")
 @EntityListeners(AuditingEntityListener.class)
 public class Notification {
+    public Notification() {
+        this.origin = NotificationOrigin.GREEN_CITY;
+    }
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -48,7 +51,7 @@ public class Notification {
 
     private LocalDateTime readAt;
 
-    @Column(name = "origin", nullable = false, columnDefinition = "varchar(255) default 'GREEN_CITY'")
+    @Column(name = "origin", nullable = false)
     @Enumerated(EnumType.STRING)
     @Builder.Default
     private NotificationOrigin origin = NotificationOrigin.GREEN_CITY;
