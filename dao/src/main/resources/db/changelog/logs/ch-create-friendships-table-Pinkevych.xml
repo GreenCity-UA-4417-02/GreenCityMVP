@@ -4,7 +4,7 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-    <changeSet id="0" author="Sviatoslav P">
+    <changeSet id="02182026-1" author="Sviatoslav P">
         <createTable tableName="friendships">
             <column name="user1_id" type="BIGINT">
                 <constraints nullable="false"/>
