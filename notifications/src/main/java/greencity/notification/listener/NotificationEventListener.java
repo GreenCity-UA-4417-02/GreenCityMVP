@@ -1,8 +1,8 @@
-package greencity.notifications.listener;
+package greencity.notification.listener;
 
 import greencity.entity.Notification;
 import greencity.notification.event.NotificationEvent;
-import greencity.notifications.handler.NotificationEventHandler;
+import greencity.notification.handler.NotificationEventHandler;
 import greencity.repository.NotificationRepo;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;

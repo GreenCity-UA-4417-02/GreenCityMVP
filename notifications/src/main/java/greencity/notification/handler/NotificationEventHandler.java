@@ -1,4 +1,4 @@
-package greencity.notifications.handler;
+package greencity.notification.handler;
 
 import greencity.entity.Notification;
 import greencity.notification.event.NotificationEvent;
