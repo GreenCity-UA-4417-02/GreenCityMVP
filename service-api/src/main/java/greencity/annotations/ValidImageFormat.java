@@ -12,8 +12,10 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ValidImageFormat {
     String message() default "Invalid image format";
+
     String[] allowedFormats() default {"jpg", "jpeg", "png"};
+
     Class<?>[] groups() default {};
+
     Class<? extends Payload>[] payload() default {};
 }
-

@@ -46,4 +46,6 @@ public class Notification {
     private LocalDateTime createdAt;
 
     private LocalDateTime readAt;
+
+    private boolean isDeleted = false;
 }

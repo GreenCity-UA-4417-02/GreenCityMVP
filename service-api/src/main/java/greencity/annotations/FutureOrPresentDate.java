@@ -12,6 +12,8 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface FutureOrPresentDate {
     String message() default "Date cannot be in the past";
+
     Class<?>[] groups() default {};
+
     Class<? extends Payload>[] payload() default {};
 }

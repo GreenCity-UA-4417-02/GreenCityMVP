@@ -21,21 +21,21 @@ public class EventTypeConsistencyValidator implements ConstraintValidator<EventT
                 case OFFLINE:
                     if (!hasAddress || hasOnlineLink) {
                         addConstraintViolation(context,
-                                "OFFLINE events require address and should not have online link");
+                            "OFFLINE events require address and should not have online link");
                         return false;
                     }
                     break;
                 case ONLINE:
                     if (!hasOnlineLink || hasAddress) {
                         addConstraintViolation(context,
-                                "ONLINE events require online link and should not have address");
+                            "ONLINE events require online link and should not have address");
                         return false;
                     }
                     break;
                 case ONLINE_OFFLINE:
                     if (!hasAddress || !hasOnlineLink) {
                         addConstraintViolation(context,
-                                "ONLINE_OFFLINE events require both address and online link");
+                            "ONLINE_OFFLINE events require both address and online link");
                         return false;
                     }
                     break;

@@ -12,6 +12,8 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ValidEventTime {
     String message() default "Invalid event time configuration";
+
     Class<?>[] groups() default {};
+
     Class<? extends Payload>[] payload() default {};
 }
