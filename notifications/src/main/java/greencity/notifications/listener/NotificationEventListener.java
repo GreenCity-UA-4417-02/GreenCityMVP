@@ -5,6 +5,7 @@ import greencity.notification.event.NotificationEvent;
 import greencity.notifications.handler.NotificationEventHandler;
 import greencity.repository.NotificationRepo;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
@@ -18,11 +19,12 @@ public class NotificationEventListener {
     public NotificationEventListener(
             List<NotificationEventHandler<? extends NotificationEvent>> handlers,
             NotificationRepo notificationRepo) {
+
         this.handlers = handlers;
         this.notificationRepo = notificationRepo;
     }
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handleNotification(NotificationEvent event) {
         handlers.stream()
