@@ -9,11 +9,11 @@ public class NotificationDtoResponseMapper {
 
     public NotificationResponseDto convert(Notification notification, String actorName) {
         return NotificationResponseDto.builder()
-                .actorName(actorName)
-                .action(notification.getNotificationAction())
-                .objectTitle(notification.getObjectTitle())
-                .createdAt(notification.getCreatedAt())
-                .read(notification.getReadAt() != null)
-                .build();
+            .actorName(actorName)
+            .action(notification.getNotificationAction())
+            .objectTitle(notification.getObjectTitle())
+            .createdAt(notification.getCreatedAt())
+            .read(notification.getReadAt() != null)
+            .build();
     }
 }

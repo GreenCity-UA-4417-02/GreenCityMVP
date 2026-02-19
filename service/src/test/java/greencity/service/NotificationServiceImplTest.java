@@ -55,12 +55,12 @@ class NotificationServiceImplTest {
         NotificationResponseDto dto = createNotificationResponseDto(actorName);
 
         when(notificationRepo.findAllByRecipientUserIdOrderByCreatedAtDesc(userId, pageable))
-                .thenReturn(page);
+            .thenReturn(page);
         when(restClient.findUserNamesByUserIds(Set.of(2L))).thenReturn(actorsName);
         when(notificationDtoResponseMapper.convert(notification, actorName)).thenReturn(dto);
 
         PageableDto<NotificationResponseDto> allNotification = notificationServiceImpl
-                .getAllNotificationsForUser(userId, pageable);
+            .getAllNotificationsForUser(userId, pageable);
 
         assertEquals(1, allNotification.getPage().size());
         assertEquals("John", allNotification.getPage().getFirst().getActorName());
@@ -78,10 +78,10 @@ class NotificationServiceImplTest {
         when(notificationRepo.findAllByRecipientUserIdOrderByCreatedAtDesc(userId, pageable)).thenReturn(page);
         when(restClient.findUserNamesByUserIds(Set.of(2L))).thenReturn(Collections.emptyMap());
         when(notificationDtoResponseMapper.convert(notification, "Unknown user"))
-                .thenReturn(createNotificationResponseDto("Unknown user"));
+            .thenReturn(createNotificationResponseDto("Unknown user"));
 
         PageableDto<NotificationResponseDto> allNotification = notificationServiceImpl
-                .getAllNotificationsForUser(userId, pageable);
+            .getAllNotificationsForUser(userId, pageable);
 
         assertEquals("Unknown user", allNotification.getPage().getFirst().getActorName());
         assertEquals(1, allNotification.getPage().size());
@@ -89,21 +89,21 @@ class NotificationServiceImplTest {
 
     private Notification createNotification(Long recipientUserId, Long actorUserId) {
         return Notification.builder()
-                .id(1L)
-                .recipientUserId(recipientUserId)
-                .actorUserId(actorUserId)
-                .objectTitle("Open new vegetarian cafe")
-                .createdAt(now())
-                .build();
+            .id(1L)
+            .recipientUserId(recipientUserId)
+            .actorUserId(actorUserId)
+            .objectTitle("Open new vegetarian cafe")
+            .createdAt(now())
+            .build();
     }
 
     private NotificationResponseDto createNotificationResponseDto(String actorName) {
         return NotificationResponseDto.builder()
-                .actorName(actorName)
-                .action(LIKED)
-                .objectTitle("Open new vegetarian cafe")
-                .createdAt(now())
-                .read(false)
-                .build();
+            .actorName(actorName)
+            .action(LIKED)
+            .objectTitle("Open new vegetarian cafe")
+            .createdAt(now())
+            .read(false)
+            .build();
     }
 }

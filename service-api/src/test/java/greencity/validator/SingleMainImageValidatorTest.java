@@ -13,9 +13,8 @@ class SingleMainImageValidatorTest {
     @Test
     void isValid_MultipleMainImages_ReturnsFalse() {
         List<EventImageDto> images = List.of(
-                new EventImageDto("http://img1.jpg", true),
-                new EventImageDto("http://img2.jpg", true)
-        );
+            new EventImageDto("http://img1.jpg", true),
+            new EventImageDto("http://img2.jpg", true));
         CreateEventRequestDto request = new CreateEventRequestDto("T", List.of(), "D", null, images, 1L, 1L, true);
 
         assertFalse(validator.isValid(request, null));

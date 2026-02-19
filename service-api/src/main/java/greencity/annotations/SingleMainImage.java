@@ -11,6 +11,8 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface SingleMainImage {
     String message() default "Only one image can be marked as main";
+
     Class<?>[] groups() default {};
+
     Class<? extends Payload>[] payload() default {};
 }

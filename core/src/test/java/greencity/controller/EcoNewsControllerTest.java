@@ -105,17 +105,16 @@ class EcoNewsControllerTest {
             """;
 
         MockMultipartFile jsonFile = new MockMultipartFile(
-                "addEcoNewsDtoRequest",
-                "",
-                "application/json",
-                json.getBytes()
-        );
+            "addEcoNewsDtoRequest",
+            "",
+            "application/json",
+            json.getBytes());
 
         this.mockMvc.perform(multipart(ecoNewsLink)
-                        .file(jsonFile)
-                        .principal(principal)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated());
+            .file(jsonFile)
+            .principal(principal)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isCreated());
 
         verify(ecoNewsService).saveEcoNews(any(AddEcoNewsDtoRequest.class), isNull(), eq("Olivia.Johnson@gmail.com"));
     }
@@ -123,16 +122,15 @@ class EcoNewsControllerTest {
     @Test
     void saveBadRequestTest() throws Exception {
         MockMultipartFile jsonFile = new MockMultipartFile(
-                "addEcoNewsDtoRequest",
-                "",
-                "application/json",
-                "{}".getBytes()
-        );
+            "addEcoNewsDtoRequest",
+            "",
+            "application/json",
+            "{}".getBytes());
 
         mockMvc.perform(multipart(ecoNewsLink)
-                        .file(jsonFile)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+            .file(jsonFile)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
     }
 
     @Test

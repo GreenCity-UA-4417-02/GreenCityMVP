@@ -37,7 +37,8 @@ class EventTypeConsistencyValidatorTest {
     @Test
     void isValid_OfflineWithoutAddress_ReturnsFalse() {
         EventDateDto dateDto = new EventDateDto(null, null, null, false, null, null);
-        CreateEventRequestDto request = new CreateEventRequestDto("Title", List.of(dateDto), "Desc", EventType.OFFLINE, List.of(), 1L, 1L, true);
+        CreateEventRequestDto request =
+            new CreateEventRequestDto("Title", List.of(dateDto), "Desc", EventType.OFFLINE, List.of(), 1L, 1L, true);
 
         assertFalse(validator.isValid(request, context));
         verify(context).disableDefaultConstraintViolation();
@@ -46,14 +47,16 @@ class EventTypeConsistencyValidatorTest {
     @Test
     void isValid_OnlineWithoutLink_ReturnsFalse() {
         EventDateDto dateDto = new EventDateDto(null, null, null, false, null, null);
-        CreateEventRequestDto request = new CreateEventRequestDto("Title", List.of(dateDto), "Desc", EventType.ONLINE, List.of(), 1L, 1L, true);
+        CreateEventRequestDto request =
+            new CreateEventRequestDto("Title", List.of(dateDto), "Desc", EventType.ONLINE, List.of(), 1L, 1L, true);
 
         assertFalse(validator.isValid(request, context));
     }
 
     @Test
     void isValid_OnlineOfflineValid_ReturnsTrue() {
-        CreateEventRequestDto request = ModelUtils.getCreateEventRequestDto(); // В ModelUtils вже ONLINE_OFFLINE з обома полями
+        CreateEventRequestDto request = ModelUtils.getCreateEventRequestDto(); // В ModelUtils вже ONLINE_OFFLINE з
+                                                                               // обома полями
         assertTrue(validator.isValid(request, context));
     }
 

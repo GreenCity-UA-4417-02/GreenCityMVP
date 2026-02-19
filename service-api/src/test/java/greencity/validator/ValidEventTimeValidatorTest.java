@@ -34,11 +34,10 @@ class ValidEventTimeValidatorTest {
     @Test
     void isValid_TodayWithPastTime_ReturnsFalse() {
         EventDateDto dto = new EventDateDto(
-                LocalDate.now(),
-                LocalTime.now().minusHours(1),
-                LocalTime.now().plusHours(1),
-                false, null, null
-        );
+            LocalDate.now(),
+            LocalTime.now().minusHours(1),
+            LocalTime.now().plusHours(1),
+            false, null, null);
 
         assertFalse(validator.isValid(dto, context));
         verify(context).buildConstraintViolationWithTemplate(anyString());

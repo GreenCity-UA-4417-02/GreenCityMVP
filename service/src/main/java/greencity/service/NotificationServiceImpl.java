@@ -4,6 +4,8 @@ import greencity.client.RestClient;
 import greencity.dto.PageableDto;
 import greencity.dto.notification.NotificationResponseDto;
 import greencity.entity.Notification;
+import greencity.exception.exceptions.BadRequestException;
+import greencity.exception.exceptions.NotFoundException;
 import greencity.mapping.NotificationDtoResponseMapper;
 import greencity.repository.NotificationRepo;
 import lombok.RequiredArgsConstructor;
@@ -27,36 +29,33 @@ public class NotificationServiceImpl implements NotificationService {
 
     public PageableDto<NotificationResponseDto> getAllNotificationsForUser(Long userId, Pageable page) {
         Page<Notification> notifications = notificationRepo
-                .findAllByRecipientUserIdOrderByCreatedAtDesc(userId, page);
+            .findAllByRecipientUserIdOrderByCreatedAtDesc(userId, page);
 
         if (notifications.isEmpty()) {
             return new PageableDto<>(Collections.emptyList(), 0, 0, 0);
         }
 
         Set<Long> actorIds = notifications.getContent()
-                .stream()
-                .map(Notification::getActorUserId)
-                .collect(Collectors.toSet());
+            .stream()
+            .map(Notification::getActorUserId)
+            .collect(Collectors.toSet());
 
         final Map<Long, String> actorNames = getActorNamesSafety(actorIds);
 
         List<NotificationResponseDto> responseDtoList = notifications
-                .getContent()
-                .stream()
-                .map(notification ->
-                        notificationDtoResponseMapper
-                                .convert(notification,
-                                        actorNames.getOrDefault(
-                                                notification.getActorUserId(), "Unknown user")
-                                )
-                )
-                .toList();
+            .getContent()
+            .stream()
+            .map(notification -> notificationDtoResponseMapper
+                .convert(notification,
+                    actorNames.getOrDefault(
+                        notification.getActorUserId(), "Unknown user")))
+            .toList();
 
         return new PageableDto<>(
-                responseDtoList,
-                notifications.getTotalElements(),
-                notifications.getNumber(),
-                notifications.getTotalPages());
+            responseDtoList,
+            notifications.getTotalElements(),
+            notifications.getNumber(),
+            notifications.getTotalPages());
     }
 
     private Map<Long, String> getActorNamesSafety(Set<Long> actorIds) {
@@ -66,5 +65,19 @@ public class NotificationServiceImpl implements NotificationService {
         } catch (Exception e) {
             return Collections.emptyMap();
         }
+    }
+
+    public void delete(Long id, Long requestingUserId) {
+
+        Notification notification = notificationRepo.findById(id)
+                .orElseThrow(() -> new NotFoundException("Notification not found"));
+
+        if (!notification.getRecipientUserId().equals(requestingUserId)) {
+            throw new BadRequestException(
+                    "Cannot delete a notification that does not belong to you");
+        }
+
+        notification.setDeleted(true);
+        notificationRepo.save(notification);
     }
 }

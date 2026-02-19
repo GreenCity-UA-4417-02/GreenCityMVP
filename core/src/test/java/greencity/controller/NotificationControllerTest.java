@@ -57,13 +57,12 @@ class NotificationControllerTest {
     @BeforeEach
     void setUp() {
         mockMvc = MockMvcBuilders
-                .standaloneSetup(notificationController)
-                .setCustomArgumentResolvers(
-                        new PageableHandlerMethodArgumentResolver(),
-                        new UserArgumentResolver(userService, modelMapper)
-                )
-                .setMessageConverters(new MappingJackson2HttpMessageConverter())
-                .build();
+            .standaloneSetup(notificationController)
+            .setCustomArgumentResolvers(
+                new PageableHandlerMethodArgumentResolver(),
+                new UserArgumentResolver(userService, modelMapper))
+            .setMessageConverters(new MappingJackson2HttpMessageConverter())
+            .build();
     }
 
     @Test
@@ -71,27 +70,27 @@ class NotificationControllerTest {
 
         UserVO userVO = getUserVO();
         NotificationResponseDto dto = new NotificationResponseDto(
-                "Anna",
-                NotificationAction.COMMENTED,
-                "Open new cafe",
-                now(),
-                false);
+            "Anna",
+            NotificationAction.COMMENTED,
+            "Open new cafe",
+            now(),
+            false);
         PageableDto<NotificationResponseDto> pageableDto = new PageableDto<>(List.of(dto), 1, 0, 1);
 
         when(userService.findByEmail("test@gmail.com")).thenReturn(userVO);
-        when(notificationService.getAllNotificationsForUser(eq(userVO.getId()), any(Pageable.class))).thenReturn(pageableDto);
+        when(notificationService.getAllNotificationsForUser(eq(userVO.getId()), any(Pageable.class)))
+            .thenReturn(pageableDto);
 
         mockMvc.perform(get(NOTIFICATIONS_CONTROLLER_LINK)
-                        .principal(principal)
-                        .param("page", "0")
-                        .param("size", "20"))
-                .andExpect(jsonPath("$.totalElements").value(1))
-                .andExpect(status().isOk());
+            .principal(principal)
+            .param("page", "0")
+            .param("size", "20"))
+            .andExpect(jsonPath("$.totalElements").value(1))
+            .andExpect(status().isOk());
 
         verify(notificationService).getAllNotificationsForUser(
-                eq(userVO.getId()),
-                any(Pageable.class)
-        );
+            eq(userVO.getId()),
+            any(Pageable.class));
     }
 
     @Test
@@ -104,16 +103,15 @@ class NotificationControllerTest {
         when(notificationService.getAllNotificationsForUser(any(), any())).thenReturn(pageableDto);
 
         mockMvc.perform(get(NOTIFICATIONS_CONTROLLER_LINK)
-                        .principal(principal)
-                        .param("page", "0")
-                        .param("size", "20"))
-                .andExpect(jsonPath("$.page").isEmpty())
-                .andExpect(jsonPath("$.totalElements").value(0))
-                .andExpect(status().isOk());
+            .principal(principal)
+            .param("page", "0")
+            .param("size", "20"))
+            .andExpect(jsonPath("$.page").isEmpty())
+            .andExpect(jsonPath("$.totalElements").value(0))
+            .andExpect(status().isOk());
 
         verify(notificationService).getAllNotificationsForUser(
-                eq(userVO.getId()),
-                any(Pageable.class)
-        );
+            eq(userVO.getId()),
+            any(Pageable.class));
     }
 }

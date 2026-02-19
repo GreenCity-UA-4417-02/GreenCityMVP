@@ -46,4 +46,7 @@ public class Notification {
     private LocalDateTime createdAt;
 
     private LocalDateTime readAt;
+
+    @Column(name = "is_deleted")
+    private boolean isDeleted = false;
 }

@@ -393,27 +393,24 @@ public class ModelUtils {
             .build();
     }
 
-
     public static AddressDto getAddressDto() {
         return new AddressDto(
-                50.4501, 30.5234,
-                "вул. Хрещатик", "Khreshchatyk St",
-                "1", "Київ", "Kyiv",
-                "Київська область", "Kyiv region",
-                "Україна", "Ukraine",
-                "Київ, Хрещатик, 1", "Kyiv, Khreshchatyk, 1"
-        );
+            50.4501, 30.5234,
+            "вул. Хрещатик", "Khreshchatyk St",
+            "1", "Київ", "Kyiv",
+            "Київська область", "Kyiv region",
+            "Україна", "Ukraine",
+            "Київ, Хрещатик, 1", "Kyiv, Khreshchatyk, 1");
     }
 
     public static EventDateDto getEventDateDto() {
         return new EventDateDto(
-                LocalDate.now().plusDays(1),
-                LocalTime.of(10, 0),
-                LocalTime.of(12, 0),
-                false,
-                getAddressDto(),
-                "https://zoom.us/j/123456789"
-        );
+            LocalDate.now().plusDays(1),
+            LocalTime.of(10, 0),
+            LocalTime.of(12, 0),
+            false,
+            getAddressDto(),
+            "https://zoom.us/j/123456789");
     }
 
     public static EventImageDto getEventImageDto() {
@@ -422,15 +419,14 @@ public class ModelUtils {
 
     public static CreateEventRequestDto getCreateEventRequestDto() {
         return new CreateEventRequestDto(
-                "Eco Workshop",
-                List.of(getEventDateDto()),
-                "This is a description that must be at least twenty characters long.",
-                EventType.ONLINE_OFFLINE,
-                List.of(getEventImageDto()),
-                1L,
-                1L,
-                true
-        );
+            "Eco Workshop",
+            List.of(getEventDateDto()),
+            "This is a description that must be at least twenty characters long.",
+            EventType.ONLINE_OFFLINE,
+            List.of(getEventImageDto()),
+            1L,
+            1L,
+            true);
     }
 
     public static InitiativeTypeDto getInitiativeTypeDto() {
@@ -443,41 +439,39 @@ public class ModelUtils {
 
     public static EventResponseDto getEventResponseDto() {
         return new EventResponseDto(
-                1L,
-                "Eco Workshop",
-                "https://example.com/main-image.png",
-                1L,
-                "Author Name",
-                LocalDate.now(),
-                "Description of the event",
-                true,
-                EventType.ONLINE,
-                List.of(getEventDateResponseDto()),
-                List.of(new EventImageResponseDto(1L, "https://example.com/image.png", true)),
-                getInitiativeTypeDto(),
-                getEventCategoryDto(),
-                10, 5, 100, 2,
-                LocalDate.now()
-        );
+            1L,
+            "Eco Workshop",
+            "https://example.com/main-image.png",
+            1L,
+            "Author Name",
+            LocalDate.now(),
+            "Description of the event",
+            true,
+            EventType.ONLINE,
+            List.of(getEventDateResponseDto()),
+            List.of(new EventImageResponseDto(1L, "https://example.com/image.png", true)),
+            getInitiativeTypeDto(),
+            getEventCategoryDto(),
+            10, 5, 100, 2,
+            LocalDate.now());
     }
 
     public static EventDateResponseDto getEventDateResponseDto() {
         return new EventDateResponseDto(
-                1L,
-                LocalDate.now().plusDays(1),
-                LocalTime.of(10, 0),
-                LocalTime.of(12, 0),
-                false,
-                getAddressDto(),
-                "https://zoom.us/j/123456789"
-        );
+            1L,
+            LocalDate.now().plusDays(1),
+            LocalTime.of(10, 0),
+            LocalTime.of(12, 0),
+            false,
+            getAddressDto(),
+            "https://zoom.us/j/123456789");
     }
 
     public static EventImageContentDto getEventImageContentDto() {
         return EventImageContentDto.builder()
-                .id(UUID.randomUUID())
-                .imageData(new byte[]{1, 2, 3})
-                .contentType("image/png")
-                .build();
+            .id(UUID.randomUUID())
+            .imageData(new byte[] {1, 2, 3})
+            .contentType("image/png")
+            .build();
     }
 }

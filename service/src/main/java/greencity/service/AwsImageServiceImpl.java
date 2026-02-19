@@ -28,31 +28,31 @@ public class AwsImageServiceImpl implements ImageService {
     public EventImageContentDto upload(MultipartFile image) {
         String originalFileName = image.getOriginalFilename();
         String extension = originalFileName != null && originalFileName.contains(".")
-                ? originalFileName.substring(originalFileName.lastIndexOf("."))
-                : "";
+            ? originalFileName.substring(originalFileName.lastIndexOf("."))
+            : "";
         String fileName = UUID.randomUUID() + extension;
 
         try {
             PutObjectRequest putOb = PutObjectRequest.builder()
-                    .bucket(bucketName)
-                    .key(fileName)
-                    .contentType(image.getContentType())
-                    .acl(ObjectCannedACL.PUBLIC_READ)
-                    .build();
+                .bucket(bucketName)
+                .key(fileName)
+                .contentType(image.getContentType())
+                .acl(ObjectCannedACL.PUBLIC_READ)
+                .build();
 
             s3Client.putObject(putOb, RequestBody.fromInputStream(
-                    image.getInputStream(), image.getSize()));
+                image.getInputStream(), image.getSize()));
 
             String url = s3Client.utilities().getUrl(GetUrlRequest.builder()
-                    .bucket(bucketName)
-                    .key(fileName)
-                    .build()).toExternalForm();
+                .bucket(bucketName)
+                .key(fileName)
+                .build()).toExternalForm();
 
             return EventImageContentDto.builder()
-                    .id(null)
-                    .link(url)
-                    .contentType(image.getContentType())
-                    .build();
+                .id(null)
+                .link(url)
+                .contentType(image.getContentType())
+                .build();
 
         } catch (IOException e) {
             log.error("Error reading image: {}", e.getMessage());
@@ -69,9 +69,9 @@ public class AwsImageServiceImpl implements ImageService {
             String fileName = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
 
             DeleteObjectRequest deleteReq = DeleteObjectRequest.builder()
-                    .bucket(bucketName)
-                    .key(fileName)
-                    .build();
+                .bucket(bucketName)
+                .key(fileName)
+                .build();
 
             s3Client.deleteObject(deleteReq);
             log.info("Deleted file from S3: {}", fileName);

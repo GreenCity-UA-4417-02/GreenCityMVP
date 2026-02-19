@@ -70,9 +70,9 @@ class ImageContentControllerTest {
         when(imageService.getImageContent(id)).thenReturn(dto);
 
         mockMvc.perform(get("/events/images/content/{id}", id))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.IMAGE_PNG))
-                .andExpect(content().bytes(dto.imageData()));
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.IMAGE_PNG))
+            .andExpect(content().bytes(dto.imageData()));
 
         verify(imageService).getImageContent(id);
     }
@@ -83,12 +83,12 @@ class ImageContentControllerTest {
         when(imageService.getImageContent(id)).thenThrow(new NotFoundException("Image not found"));
 
         mockMvc.perform(get("/events/images/content/{id}", id))
-                .andExpect(status().isNotFound());
+            .andExpect(status().isNotFound());
     }
 
     @Test
     void getImage_InvalidUuidFormat() throws Exception {
         mockMvc.perform(get("/events/images/content/{id}", "invalid-uuid"))
-                .andExpect(status().isBadRequest());
+            .andExpect(status().isBadRequest());
     }
 }
