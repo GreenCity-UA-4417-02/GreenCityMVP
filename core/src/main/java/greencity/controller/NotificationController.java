@@ -1,10 +1,12 @@
 package greencity.controller;
 
 import greencity.annotations.CurrentUser;
+import greencity.annotations.CurrentUserId;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.notification.NotificationResponseDto;
 import greencity.dto.user.UserVO;
+import greencity.exception.exceptions.BadRequestException;
 import greencity.service.NotificationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -44,8 +46,12 @@ public class NotificationController {
         @ApiResponse(responseCode = "401", description = "User is not authorized")
     })
     @DeleteMapping("/notifications/{id}")
-    public ResponseEntity<Void> deleteNotification(@PathVariable Long id) {
-        notificationService.delete(id);
+    public ResponseEntity<Void> deleteNotification(
+            @PathVariable Long id,
+            @CurrentUserId Long userId) {
+
+        notificationService.delete(id, userId);
         return ResponseEntity.noContent().build();
+
     }
 }

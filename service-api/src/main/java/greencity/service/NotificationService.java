@@ -8,5 +8,5 @@ public interface NotificationService {
 
     PageableDto<NotificationResponseDto> getAllNotificationsForUser(Long userId, Pageable page);
 
-    void delete(Long id);
+    void delete(Long id, Long userId);
 }

@@ -4,6 +4,7 @@ import greencity.client.RestClient;
 import greencity.dto.PageableDto;
 import greencity.dto.notification.NotificationResponseDto;
 import greencity.entity.Notification;
+import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.mapping.NotificationDtoResponseMapper;
 import greencity.repository.NotificationRepo;
@@ -66,9 +67,15 @@ public class NotificationServiceImpl implements NotificationService {
         }
     }
 
-    public void delete(Long id) {
+    public void delete(Long id, Long requestingUserId) {
+
         Notification notification = notificationRepo.findById(id)
-            .orElseThrow(() -> new NotFoundException("Notification not found"));
+                .orElseThrow(() -> new NotFoundException("Notification not found"));
+
+        if (!notification.getRecipientUserId().equals(requestingUserId)) {
+            throw new BadRequestException(
+                    "Cannot delete a notification that does not belong to you");
+        }
 
         notification.setDeleted(true);
         notificationRepo.save(notification);
