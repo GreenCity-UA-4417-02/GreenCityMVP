@@ -2,9 +2,13 @@ package greencity.dto.shoppinglistitem;
 
 import greencity.annotations.LanguageTranslationConstraint;
 import greencity.dto.language.LanguageTranslationDTO;
-import lombok.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import java.util.List;
 
 @NoArgsConstructor

@@ -9,7 +9,9 @@ import jakarta.validation.ConstraintValidatorContext;
 public class SingleMainImageValidator implements ConstraintValidator<SingleMainImage, CreateEventRequestDto> {
     @Override
     public boolean isValid(CreateEventRequestDto request, ConstraintValidatorContext context) {
-        if (request.images() == null) return true;
+        if (request.images() == null) {
+            return true;
+        }
 
         long mainImageCount = request.images().stream().filter(EventImageDto::isMain).count();
         return mainImageCount <= 1;

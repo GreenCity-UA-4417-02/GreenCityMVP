@@ -2,8 +2,8 @@ package greencity.controller;
 
 import greencity.service.LanguageService;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -24,21 +24,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(MockitoExtension.class)
 public class LanguageControllerTest {
+    private static final String LANGUAGE_LINK = "/language";
     private MockMvc mockMvc;
-
     @InjectMocks
     private LanguageController languageController;
-
     @Mock
     private LanguageService languageService;
 
-    private static final String LANGUAGE_LINK = "/language";
-
     @BeforeEach
-    void setUp(){
+    void setUp() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(languageController)
-                .setMessageConverters(new MappingJackson2HttpMessageConverter())
-                .build();
+            .setMessageConverters(new MappingJackson2HttpMessageConverter())
+            .build();
     }
 
     @Test
@@ -53,7 +50,7 @@ public class LanguageControllerTest {
     void getAllLanguageCodes_returnsEmptyList() throws Exception {
         List<String> emptyListOfLanguages = List.of();
 
-        performAndVerifyLanguageCodes(emptyListOfLanguages, new String[]{});
+        performAndVerifyLanguageCodes(emptyListOfLanguages, new String[] {});
     }
 
     private void performAndVerifyLanguageCodes(List<String> mockResponse, String[] expectedJsonArray) throws Exception {

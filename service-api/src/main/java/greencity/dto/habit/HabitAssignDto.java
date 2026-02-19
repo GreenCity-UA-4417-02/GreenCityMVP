@@ -3,7 +3,13 @@ package greencity.dto.habit;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarDto;
 import greencity.dto.user.UserShoppingListItemAdvanceDto;
 import greencity.enums.HabitAssignStatus;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import java.time.ZonedDateTime;
 import java.util.List;
 

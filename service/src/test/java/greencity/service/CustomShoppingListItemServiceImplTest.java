@@ -42,26 +42,6 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class CustomShoppingListItemServiceImplTest {
-    @Mock
-    private CustomShoppingListItemRepo customShoppingListItemRepo;
-
-    @Mock
-    private ModelMapper modelMapper;
-
-    @Mock
-    private RestClient restClient;
-
-    @Mock
-    private HabitRepo habitRepo;
-    @Mock
-    private HabitAssignRepo habitAssignRepo;
-
-    @Mock
-    private UserShoppingListItemRepo userShoppingListItemRepo;
-
-    @InjectMocks
-    private CustomShoppingListItemServiceImpl customShoppingListItemService;
-
     private final User user =
         User.builder()
             .id(1L)
@@ -74,11 +54,9 @@ class CustomShoppingListItemServiceImplTest {
             .dateOfRegistration(LocalDateTime.now())
             .customShoppingListItems(new ArrayList<>())
             .build();
-
     private final Habit habit = Habit.builder()
         .id(1L)
         .build();
-
     private final CustomShoppingListItem item =
         CustomShoppingListItem.builder()
             .id(1L)
@@ -87,6 +65,20 @@ class CustomShoppingListItemServiceImplTest {
             .text("item")
             .status(ShoppingListItemStatus.ACTIVE)
             .build();
+    @Mock
+    private CustomShoppingListItemRepo customShoppingListItemRepo;
+    @Mock
+    private ModelMapper modelMapper;
+    @Mock
+    private RestClient restClient;
+    @Mock
+    private HabitRepo habitRepo;
+    @Mock
+    private HabitAssignRepo habitAssignRepo;
+    @Mock
+    private UserShoppingListItemRepo userShoppingListItemRepo;
+    @InjectMocks
+    private CustomShoppingListItemServiceImpl customShoppingListItemService;
 
     @Test
     void findAll() {
@@ -141,7 +133,7 @@ class CustomShoppingListItemServiceImplTest {
 
         when(customShoppingListItemRepo.findAllCustomShoppingListItemsForUserIdAndHabitIdInProgress(anyLong(),
             anyLong()))
-                .thenReturn(List.of(item));
+            .thenReturn(List.of(item));
         when(modelMapper.map(item, CustomShoppingListItemResponseDto.class)).thenReturn(itemResponseDto);
 
         assertEquals(List.of(itemResponseDto), customShoppingListItemService
@@ -211,7 +203,7 @@ class CustomShoppingListItemServiceImplTest {
         when(habitAssignRepo.findById(anyLong())).thenThrow(NotFoundException.class);
         CustomShoppingListItemSaveRequestDto dtoToSave = new CustomShoppingListItemSaveRequestDto("foo");
         BulkSaveCustomShoppingListItemDto bulkSave =
-            new BulkSaveCustomShoppingListItemDto(Collections.singletonList(dtoToSave));
+                new BulkSaveCustomShoppingListItemDto(Collections.singletonList(dtoToSave));
         assertThrows(NotFoundException.class, () -> customShoppingListItemService.save(bulkSave, 1L, 1L));
     }
 
@@ -287,8 +279,8 @@ class CustomShoppingListItemServiceImplTest {
     void findAllByUserWithNonExistentIdTest() {
         when(customShoppingListItemRepo.findAllByUserIdAndHabitId(1L, 1L)).thenReturn(Collections.emptyList());
         Assertions
-            .assertThrows(NotFoundException.class,
-                () -> customShoppingListItemService.findAllByUserAndHabit(1L, 1L));
+                .assertThrows(NotFoundException.class,
+                        () -> customShoppingListItemService.findAllByUserAndHabit(1L, 1L));
     }
 
     @Test
@@ -344,24 +336,24 @@ class CustomShoppingListItemServiceImplTest {
     @Test
     void findAllUsersCustomShoppingListItemsByStatusWithStatus() {
         when(customShoppingListItemRepo.findAllByUserIdAndStatus(1L, "INPROGRESS"))
-            .thenReturn(List.of(ModelUtils.getCustomShoppingListItem()));
+                .thenReturn(List.of(ModelUtils.getCustomShoppingListItem()));
         when(modelMapper.map(ModelUtils.getCustomShoppingListItem(), CustomShoppingListItemResponseDto.class))
-            .thenReturn(ModelUtils.getCustomShoppingListItemResponseDto());
+                .thenReturn(ModelUtils.getCustomShoppingListItemResponseDto());
 
         assertTrue(customShoppingListItemService.findAllUsersCustomShoppingListItemsByStatus(1L, "INPROGRESS")
-            .contains(ModelUtils.getCustomShoppingListItemResponseDto()));
+                .contains(ModelUtils.getCustomShoppingListItemResponseDto()));
         ;
     }
 
     @Test
     void findAllUsersCustomShoppingListItemsByStatusWithoutStatus() {
         when(customShoppingListItemRepo.findAllByUserId(1L))
-            .thenReturn(List.of(ModelUtils.getCustomShoppingListItem()));
+                .thenReturn(List.of(ModelUtils.getCustomShoppingListItem()));
         when(modelMapper.map(ModelUtils.getCustomShoppingListItem(), CustomShoppingListItemResponseDto.class))
-            .thenReturn(ModelUtils.getCustomShoppingListItemResponseDto());
+                .thenReturn(ModelUtils.getCustomShoppingListItemResponseDto());
 
         assertTrue(customShoppingListItemService.findAllUsersCustomShoppingListItemsByStatus(1L, null)
-            .contains(ModelUtils.getCustomShoppingListItemResponseDto()));
+                .contains(ModelUtils.getCustomShoppingListItemResponseDto()));
     }
 
     @Test

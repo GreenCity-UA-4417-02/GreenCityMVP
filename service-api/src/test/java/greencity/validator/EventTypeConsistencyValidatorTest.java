@@ -11,12 +11,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class EventTypeConsistencyValidatorTest {
@@ -37,7 +37,8 @@ class EventTypeConsistencyValidatorTest {
     @Test
     void isValid_OfflineWithoutAddress_ReturnsFalse() {
         EventDateDto dateDto = new EventDateDto(null, null, null, false, null, null);
-        CreateEventRequestDto request = new CreateEventRequestDto("Title", List.of(dateDto), "Desc", EventType.OFFLINE, List.of(), 1L, 1L, true);
+        CreateEventRequestDto request =
+            new CreateEventRequestDto("Title", List.of(dateDto), "Desc", EventType.OFFLINE, List.of(), 1L, 1L, true);
 
         assertFalse(validator.isValid(request, context));
         verify(context).disableDefaultConstraintViolation();
@@ -46,14 +47,16 @@ class EventTypeConsistencyValidatorTest {
     @Test
     void isValid_OnlineWithoutLink_ReturnsFalse() {
         EventDateDto dateDto = new EventDateDto(null, null, null, false, null, null);
-        CreateEventRequestDto request = new CreateEventRequestDto("Title", List.of(dateDto), "Desc", EventType.ONLINE, List.of(), 1L, 1L, true);
+        CreateEventRequestDto request =
+            new CreateEventRequestDto("Title", List.of(dateDto), "Desc", EventType.ONLINE, List.of(), 1L, 1L, true);
 
         assertFalse(validator.isValid(request, context));
     }
 
     @Test
     void isValid_OnlineOfflineValid_ReturnsTrue() {
-        CreateEventRequestDto request = ModelUtils.getCreateEventRequestDto(); // В ModelUtils вже ONLINE_OFFLINE з обома полями
+        CreateEventRequestDto request = ModelUtils.getCreateEventRequestDto(); // В ModelUtils вже ONLINE_OFFLINE з
+        // обома полями
         assertTrue(validator.isValid(request, context));
     }
 

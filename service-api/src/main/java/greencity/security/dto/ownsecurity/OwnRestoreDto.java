@@ -1,10 +1,10 @@
 package greencity.security.dto.ownsecurity;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import static greencity.constant.ServiceValidationConstants.INVALID_PASSWORD;
 
 @Data

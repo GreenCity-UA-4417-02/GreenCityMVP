@@ -14,7 +14,9 @@ public class ValidImageFormatValidator implements ConstraintValidator<ValidImage
 
     @Override
     public boolean isValid(String url, ConstraintValidatorContext context) {
-        if (url == null) return true;
+        if (url == null) {
+            return true;
+        }
 
         for (String format : allowedFormats) {
             if (url.toLowerCase().endsWith("." + format)) {

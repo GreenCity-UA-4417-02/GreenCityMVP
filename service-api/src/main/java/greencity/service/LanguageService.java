@@ -44,7 +44,6 @@ public interface LanguageService {
      *
      * @param tagTranslationId id of tag translation object.
      * @return {@link LanguageDTO}.
-     *
      * @author Vira Maksymets
      */
     LanguageDTO findByTagTranslationId(Long tagTranslationId);

@@ -1,12 +1,17 @@
 package greencity.dto.econews;
 
 import greencity.constant.ServiceValidationConstants;
-import lombok.*;
-import org.springframework.format.annotation.DateTimeFormat;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.util.List;

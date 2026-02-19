@@ -12,7 +12,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.util.UUID;
 
@@ -32,20 +31,20 @@ public class BlobImageServiceImpl implements ImageService, ImageContentRetriever
 
         try {
             EventImageContent content = EventImageContent.builder()
-                    .imageData(image.getBytes())
-                    .contentType(image.getContentType())
-                    .build();
+                .imageData(image.getBytes())
+                .contentType(image.getContentType())
+                .build();
 
             EventImageContent savedContent = eventImageContentRepository.save(content);
 
             String link = "/events/images/content/" + savedContent.getId();
 
             return EventImageContentDto.builder()
-                    .id(savedContent.getId())
-                    .imageData(savedContent.getImageData())
-                    .contentType(savedContent.getContentType())
-                    .link(link)
-                    .build();
+                .id(savedContent.getId())
+                .imageData(savedContent.getImageData())
+                .contentType(savedContent.getContentType())
+                .link(link)
+                .build();
         } catch (IOException e) {
             log.error("Failed to save image to database: {}", e.getMessage());
             throw new NotSavedException("Failed to convert image to bytes");
@@ -70,11 +69,11 @@ public class BlobImageServiceImpl implements ImageService, ImageContentRetriever
     @Transactional(readOnly = true)
     public EventImageContentDto getImageContent(UUID id) {
         EventImageContent content = eventImageContentRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_IMAGE_CONTENT_NOT_FOUND + id));
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_IMAGE_CONTENT_NOT_FOUND + id));
 
         return EventImageContentDto.builder()
-                .imageData(content.getImageData())
-                .contentType(content.getContentType())
-                .build();
+            .imageData(content.getImageData())
+            .contentType(content.getContentType())
+            .build();
     }
 }

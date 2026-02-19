@@ -7,15 +7,15 @@ import greencity.entity.Tag;
 import greencity.entity.Tag_;
 import greencity.entity.localization.TagTranslation;
 import greencity.entity.localization.TagTranslation_;
+import jakarta.persistence.criteria.*;
+import jakarta.persistence.metamodel.ListAttribute;
+import jakarta.persistence.metamodel.SingularAttribute;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import jakarta.persistence.criteria.*;
-import jakarta.persistence.metamodel.ListAttribute;
-import jakarta.persistence.metamodel.SingularAttribute;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -128,7 +128,7 @@ class EcoNewsSpecificationTest {
         when(ecoNewsRootMock.get(EcoNews_.TITLE)).thenReturn(pathEcoNewsTitleMock);
 
         when(criteriaBuilderMock.like(ecoNewsRootMock.get(EcoNews_.TITLE), "%" + criteriaList.get(0).getValue() + "%"))
-            .thenReturn(andTitlePredicate);
+                .thenReturn(andTitlePredicate);
 
         when(criteriaBuilderMock.and(predicateMock, andTitlePredicate)).thenReturn(andTitlePredicate);
 
@@ -137,7 +137,7 @@ class EcoNewsSpecificationTest {
         when(pathEcoNewsAuthorMock.get("name")).thenReturn(pathEcoNewsAuthorNameMock);
 
         when(criteriaBuilderMock
-            .like(ecoNewsRootMock.get(EcoNews_.AUTHOR).get("name"), "%" + criteriaList.get(1).getValue() + "%"))
+                .like(ecoNewsRootMock.get(EcoNews_.AUTHOR).get("name"), "%" + criteriaList.get(1).getValue() + "%"))
                 .thenReturn(andAuthorPredicate);
 
         when(criteriaBuilderMock.and(andTitlePredicate, andAuthorPredicate)).thenReturn(andAuthorPredicate);
@@ -145,7 +145,7 @@ class EcoNewsSpecificationTest {
         when(ecoNewsRootMock.get(EcoNews_.TEXT)).thenReturn(pathEcoNewsTextMock);
 
         when(criteriaBuilderMock.like(ecoNewsRootMock.get(EcoNews_.TEXT), "%" + criteriaList.get(2).getValue() + "%"))
-            .thenReturn(andTextPredicate);
+                .thenReturn(andTextPredicate);
 
         when(criteriaBuilderMock.and(andAuthorPredicate, andTextPredicate)).thenReturn(andTextPredicate);
 
@@ -156,7 +156,7 @@ class EcoNewsSpecificationTest {
         when(tagTranslationJoinMock.get(TagTranslation_.name)).thenReturn(pathTagTranslationNameMock);
 
         when(criteriaBuilderMock
-            .like(pathTagTranslationNameMock.as(String.class), "%" + criteriaList.get(3).getValue() + "%"))
+                .like(pathTagTranslationNameMock.as(String.class), "%" + criteriaList.get(3).getValue() + "%"))
                 .thenReturn(andTagPredicate);
 
         when(criteriaBuilderMock.and(andTextPredicate, andTagPredicate)).thenReturn(andTagPredicate);

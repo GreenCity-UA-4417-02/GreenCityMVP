@@ -21,21 +21,22 @@ import org.springframework.web.bind.annotation.RestController;
 @AllArgsConstructor
 @RequestMapping("/notifications")
 public class NotificationController {
-
     private final NotificationService notificationService;
 
     /**
+     * Method for getting all notifications.
+     *
      * @param pageable {@link Pageable} instance.
      * @return Pageable of {@link NotificationResponseDto}.
      */
     @Operation(summary = "Find all notifications.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = HttpStatuses.OK)
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK)
     })
     @GetMapping
     public PageableDto<NotificationResponseDto> getAllNotificationsForUser(
-            @Parameter(hidden = true) @CurrentUser UserVO userVO,
-            @Parameter(hidden = true) @PageableDefault(value = 20) Pageable pageable) {
+        @Parameter(hidden = true) @CurrentUser UserVO userVO,
+        @Parameter(hidden = true) @PageableDefault(value = 20) Pageable pageable) {
         return notificationService.getAllNotificationsForUser(userVO.getId(), pageable);
     }
 }

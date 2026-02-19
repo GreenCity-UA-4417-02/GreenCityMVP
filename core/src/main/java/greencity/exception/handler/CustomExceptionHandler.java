@@ -5,7 +5,36 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
-import greencity.exception.exceptions.*;
+import greencity.exception.exceptions.BadCategoryRequestException;
+import greencity.exception.exceptions.BadRefreshTokenException;
+import greencity.exception.exceptions.BadRequestException;
+import greencity.exception.exceptions.BadSocialNetworkLinksException;
+import greencity.exception.exceptions.EmailNotVerified;
+import greencity.exception.exceptions.InvalidStatusException;
+import greencity.exception.exceptions.InvalidURLException;
+import greencity.exception.exceptions.LowRoleLevelException;
+import greencity.exception.exceptions.NotCurrentUserException;
+import greencity.exception.exceptions.NotDeleteLastHabit;
+import greencity.exception.exceptions.NotDeletedException;
+import greencity.exception.exceptions.NotFoundException;
+import greencity.exception.exceptions.NotSavedException;
+import greencity.exception.exceptions.NotUpdatedException;
+import greencity.exception.exceptions.ShoppingListItemNotFoundException;
+import greencity.exception.exceptions.TagNotFoundException;
+import greencity.exception.exceptions.UnsupportedSortException;
+import greencity.exception.exceptions.UserAlreadyHasEnrolledHabitAssign;
+import greencity.exception.exceptions.UserAlreadyHasHabitAssignedException;
+import greencity.exception.exceptions.UserAlreadyRegisteredException;
+import greencity.exception.exceptions.UserHasNoAvailableHabitTranslationException;
+import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
+import greencity.exception.exceptions.UserHasNoShoppingListItemsException;
+import greencity.exception.exceptions.UserHasReachedOutOfEnrollRange;
+import greencity.exception.exceptions.UserShoppingListItemNotSavedException;
+import greencity.exception.exceptions.UserShoppingListItemStatusNotUpdatedException;
+import greencity.exception.exceptions.WrongEmailOrPasswordException;
+import greencity.exception.exceptions.WrongIdException;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -25,10 +54,12 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.ConstraintViolationException;
 import java.time.format.DateTimeParseException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -52,25 +83,27 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
      */
     @ExceptionHandler(HttpClientErrorException.class)
     public final ResponseEntity<Object> handleHttpClientErrorException(
-            HttpClientErrorException ex, WebRequest request) throws JsonProcessingException {
+        HttpClientErrorException ex, WebRequest request) throws JsonProcessingException {
         Map<String, String> httpClientResponseBody = jsonHttpClientErrorExceptionToMap(ex);
         String message = httpClientResponseBody.getOrDefault("message", ex.getStatusText());
 
         log.info(ex.getStatusCode() + " " + message);
 
         HttpClientErrorExceptionResponse responseBody =
-                new HttpClientErrorExceptionResponse(getErrorAttributes(request), message);
+            new HttpClientErrorExceptionResponse(getErrorAttributes(request), message);
 
         return ResponseEntity.status(ex.getStatusCode()).body(responseBody);
     }
 
-    private Map<String, String> jsonHttpClientErrorExceptionToMap(HttpClientErrorException ex) throws JsonProcessingException {
+    private Map<String, String> jsonHttpClientErrorExceptionToMap(HttpClientErrorException ex)
+        throws JsonProcessingException {
         String body = ex.getResponseBodyAsString();
         if (body.isBlank()) {
             return Collections.emptyMap();
         }
         try {
-            TypeReference<Map<String, String>> responseType = new TypeReference<>() {};
+            TypeReference<Map<String, String>> responseType = new TypeReference<>() {
+            };
             return objectMapper.readValue(body, responseType);
         } catch (Exception e) {
             log.warn("Could not parse error response body: {}", body);
@@ -550,10 +583,10 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
      */
     @Override
     protected ResponseEntity<Object> handleHttpMessageNotReadable(
-            @NonNull HttpMessageNotReadableException ex,
-            @NonNull HttpHeaders headers,
-            @NonNull HttpStatusCode status,
-            @NonNull WebRequest request) {
+        @NonNull HttpMessageNotReadableException ex,
+        @NonNull HttpHeaders headers,
+        @NonNull HttpStatusCode status,
+        @NonNull WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         String message = ex.getMostSpecificCause().getMessage();
         exceptionResponse.setMessage(message);
@@ -608,11 +641,10 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
-            @NonNull MethodArgumentNotValidException ex,
-            @NonNull HttpHeaders headers,
-            @NonNull HttpStatusCode status,
-            @NonNull WebRequest request) {
-
+        @NonNull MethodArgumentNotValidException ex,
+        @NonNull HttpHeaders headers,
+        @NonNull HttpStatusCode status,
+        @NonNull WebRequest request) {
         List<ValidationExceptionDto> errors = new ArrayList<>();
 
         ex.getBindingResult().getFieldErrors().forEach(fieldError -> {
@@ -642,7 +674,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     /**
      * Handles {@link LowRoleLevelException}.
      *
-     * @param ex the exception
+     * @param ex      the exception
      * @param request the current web request
      * @return response with HTTP 403 status
      * @author Zahychenko Alona
@@ -657,6 +689,6 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
     private Map<String, Object> getErrorAttributes(WebRequest webRequest) {
         return new HashMap<>(errorAttributes.getErrorAttributes(webRequest,
-                ErrorAttributeOptions.of(ErrorAttributeOptions.Include.MESSAGE)));
+            ErrorAttributeOptions.of(ErrorAttributeOptions.Include.MESSAGE)));
     }
 }

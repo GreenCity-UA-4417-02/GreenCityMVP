@@ -22,10 +22,8 @@ class AzureCloudStorageServiceTest {
 
     @Mock
     private ModelMapper modelMapper;
-
     @Mock
     private PropertyResolver propertyResolver;
-
     @InjectMocks
     private AzureCloudStorageService azureCloudStorageService;
 

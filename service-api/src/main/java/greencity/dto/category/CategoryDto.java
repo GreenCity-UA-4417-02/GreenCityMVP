@@ -1,13 +1,13 @@
 package greencity.dto.category;
 
 import greencity.constant.ServiceValidationConstants;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import java.io.Serializable;
 
 @Data
@@ -15,6 +15,15 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Builder
 public class CategoryDto implements Serializable {
+    @Pattern(regexp = "^[a-zA-Z0-9\\s][^<>]*$", message = ServiceValidationConstants.CATEGORY_NAME_BAD_FORMED)
+    @Length(
+        min = ServiceValidationConstants.CATEGORY_NAME_MIN_LENGTH,
+        max = ServiceValidationConstants.CATEGORY_NAME_MAX_LENGTH)
+    @NotBlank
+    private String name;
+    private String nameUa;
+    private Long parentCategoryId;
+
     /**
      * Constructor.
      */
@@ -25,15 +34,4 @@ public class CategoryDto implements Serializable {
                 max = ServiceValidationConstants.CATEGORY_NAME_MAX_LENGTH) @NotBlank String name) {
         this.name = name;
     }
-
-    @Pattern(regexp = "^[a-zA-Z0-9\\s][^<>]*$", message = ServiceValidationConstants.CATEGORY_NAME_BAD_FORMED)
-    @Length(
-        min = ServiceValidationConstants.CATEGORY_NAME_MIN_LENGTH,
-        max = ServiceValidationConstants.CATEGORY_NAME_MAX_LENGTH)
-    @NotBlank
-    private String name;
-
-    private String nameUa;
-
-    private Long parentCategoryId;
 }

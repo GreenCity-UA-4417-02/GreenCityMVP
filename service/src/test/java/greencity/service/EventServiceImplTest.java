@@ -59,8 +59,8 @@ class EventServiceImplTest {
     void createEvent_ValidRequest_Success() {
         Long organizerId = 1L;
         CreateEventRequestDto requestDto = ModelUtils.getCreateEventRequestDto();
-        MultipartFile[] images = new MultipartFile[]{
-                new MockMultipartFile("image", "test.jpg", "image/jpeg", "data".getBytes())
+        MultipartFile[] images = new MultipartFile[] {
+            new MockMultipartFile("image", "test.jpg", "image/jpeg", "data".getBytes())
         };
 
         User organizer = User.builder().id(organizerId).name("Name").build();
@@ -69,9 +69,9 @@ class EventServiceImplTest {
         Event event = new Event();
 
         EventImageContentDto imageDto = EventImageContentDto.builder()
-                .id(UUID.randomUUID())
-                .link("http://image.link")
-                .build();
+            .id(UUID.randomUUID())
+            .link("http://image.link")
+            .build();
 
         when(userRepository.findById(organizerId)).thenReturn(Optional.of(organizer));
         when(initiativeTypeRepository.findById(requestDto.initiativeTypeId())).thenReturn(Optional.of(initiativeType));
@@ -82,7 +82,8 @@ class EventServiceImplTest {
         when(eventImageContentRepository.getReferenceById(imageDto.id())).thenReturn(new EventImageContent());
 
         when(eventRepository.save(any(Event.class))).thenAnswer(invocation -> invocation.getArgument(0));
-        when(modelMapper.map(any(Event.class), eq(EventResponseDto.class))).thenReturn(ModelUtils.getEventResponseDto());
+        when(modelMapper.map(any(Event.class), eq(EventResponseDto.class)))
+            .thenReturn(ModelUtils.getEventResponseDto());
 
         EventResponseDto result = eventService.createEvent(requestDto, images, organizerId);
 
@@ -100,7 +101,7 @@ class EventServiceImplTest {
         when(userRepository.findById(organizerId)).thenReturn(Optional.empty());
 
         NotFoundException exception = assertThrows(NotFoundException.class,
-                () -> eventService.createEvent(requestDto, null, organizerId));
+            () -> eventService.createEvent(requestDto, null, organizerId));
 
         assertTrue(exception.getMessage().contains(ErrorMessage.EVENT_ORGANIZER_NOT_FOUND));
     }
@@ -114,16 +115,16 @@ class EventServiceImplTest {
         when(initiativeTypeRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         assertThrows(NotFoundException.class,
-                () -> eventService.createEvent(requestDto, null, organizerId));
+            () -> eventService.createEvent(requestDto, null, organizerId));
     }
 
     @Test
     void createEvent_WithMultipleImages_SetsFirstAsMain() {
         Long organizerId = 1L;
         CreateEventRequestDto requestDto = ModelUtils.getCreateEventRequestDto();
-        MultipartFile[] images = new MultipartFile[]{
-                new MockMultipartFile("img1", "1.jpg", "image/jpeg", "d1".getBytes()),
-                new MockMultipartFile("img2", "2.jpg", "image/jpeg", "d2".getBytes())
+        MultipartFile[] images = new MultipartFile[] {
+            new MockMultipartFile("img1", "1.jpg", "image/jpeg", "d1".getBytes()),
+            new MockMultipartFile("img2", "2.jpg", "image/jpeg", "d2".getBytes())
         };
 
         Event event = new Event();

@@ -2,14 +2,32 @@ package greencity.entity.event;
 
 import greencity.entity.User;
 import greencity.enums.EventType;
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import lombok.Setter;
 import org.hibernate.proxy.HibernateProxy;
-
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "events")
@@ -61,7 +79,6 @@ public class Event {
     @Column(nullable = false)
     private EventType type;
 
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "initiative_type_id")
     private InitiativeType initiativeType;
@@ -74,15 +91,17 @@ public class Event {
     private List<EventGrade> eventGrades = new ArrayList<>();
 
     public boolean isEventTypeValid() {
-        if (type == null) return false;
+        if (type == null) {
+            return false;
+        }
 
         return switch (type) {
             case OFFLINE -> dates.stream()
-                    .allMatch(date -> date.getAddress() != null && date.getOnlineLink() == null);
+                .allMatch(date -> date.getAddress() != null && date.getOnlineLink() == null);
             case ONLINE -> dates.stream()
-                    .allMatch(date -> date.getOnlineLink() != null && date.getAddress() == null);
+                .allMatch(date -> date.getOnlineLink() != null && date.getAddress() == null);
             case ONLINE_OFFLINE -> dates.stream()
-                    .allMatch(date -> date.getAddress() != null && date.getOnlineLink() != null);
+                .allMatch(date -> date.getAddress() != null && date.getOnlineLink() != null);
         };
     }
 
@@ -92,17 +111,29 @@ public class Event {
 
     @Override
     public final boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null) return false;
-        Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
-        Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
-        if (thisEffectiveClass != oEffectiveClass) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null) {
+            return false;
+        }
+        Class<?> effectiveClass =
+            o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass()
+                : o.getClass();
+        Class<?> thisEffectiveClass =
+            this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass()
+                : this.getClass();
+        if (thisEffectiveClass != effectiveClass) {
+            return false;
+        }
         Event event = (Event) o;
         return getId() != null && Objects.equals(getId(), event.getId());
     }
 
     @Override
     public final int hashCode() {
-        return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
+        return this instanceof HibernateProxy
+            ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode()
+            : getClass().hashCode();
     }
 }
