@@ -184,5 +184,6 @@
     <include file="db/changelog/logs/ch-update-events-images-blob-Huz.xml"/>
     <include file="db/changelog/logs/ch-update-event-images-content-table-Huz.xml"/>
     <include file="db/changelog/logs/ch-change-event-images-id-to-uuid-Huz.xml"/>
+    <include file="db/changelog/logs/changelog-add-origin-to-notifications.xml"/>
 </databaseChangeLog>
 

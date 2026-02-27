@@ -14,6 +14,7 @@ public class NotificationDtoResponseMapper {
                 .objectTitle(notification.getObjectTitle())
                 .createdAt(notification.getCreatedAt())
                 .read(notification.getReadAt() != null)
+                .origin(notification.getOrigin())
                 .build();
     }
 }

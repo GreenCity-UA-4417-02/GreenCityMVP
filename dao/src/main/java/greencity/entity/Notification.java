@@ -1,6 +1,7 @@
 package greencity.entity;
 
 import greencity.enums.NotificationAction;
+import greencity.enums.NotificationOrigin;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -11,13 +12,16 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @EqualsAndHashCode(of = "id")
-@NoArgsConstructor
+// @NoArgsConstructor removed to use manual default constructor
 @AllArgsConstructor
 @Builder
 @Entity
 @Table(name = "notifications")
 @EntityListeners(AuditingEntityListener.class)
 public class Notification {
+    public Notification() {
+        this.origin = NotificationOrigin.GREEN_CITY;
+    }
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -46,4 +50,9 @@ public class Notification {
     private LocalDateTime createdAt;
 
     private LocalDateTime readAt;
+
+    @Column(name = "origin", nullable = false)
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private NotificationOrigin origin = NotificationOrigin.GREEN_CITY;
 }
